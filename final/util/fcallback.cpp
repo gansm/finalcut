@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the FINAL CUT widget toolkit                    *
 *                                                                      *
-* Copyright 2020-2021 Markus Gans                                      *
+* Copyright 2020-2026 Markus Gans                                      *
 *                                                                      *
 * FINAL CUT is free software; you can redistribute it and/or modify    *
 * it under the terms of the GNU Lesser General Public License as       *
@@ -24,6 +24,15 @@
 
 namespace finalcut
 {
+
+//----------------------------------------------------------------------
+// class CmpFuncPtr
+//----------------------------------------------------------------------
+
+// constructors and destructor
+//----------------------------------------------------------------------
+CmpFuncPtr::CmpFuncPtr() = default;  // constructor
+CmpFuncPtr::~CmpFuncPtr() = default;  // destructor
 
 //----------------------------------------------------------------------
 // class FCallback

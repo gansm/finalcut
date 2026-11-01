@@ -53,7 +53,13 @@ class FWidget;
 
 struct CmpFuncPtr
 {
-  virtual ~CmpFuncPtr() = default;
+  // Constructors
+  CmpFuncPtr ();
+
+  // Destructor
+  virtual ~CmpFuncPtr();
+
+  // Method
   virtual bool isEqual (const CmpFuncPtr& func) const noexcept = 0;
 };
 
@@ -67,13 +73,16 @@ struct CompareFunctionPointer : CmpFuncPtr
   using Type = std::decay_t<T>;
   Type function_ptr;
 
+  // Constructor
   explicit CompareFunctionPointer (T func)
-    : function_ptr(func)
+    : CmpFuncPtr()
+    , function_ptr(func)
   { }
 
+  // Method
   inline bool isEqual (const CmpFuncPtr& func) const noexcept override
   {
-    auto other = static_cast<const CompareFunctionPointer&>(func);
+    const auto& other = static_cast<const CompareFunctionPointer&>(func);
     return function_ptr == other.function_ptr;
   }
 };

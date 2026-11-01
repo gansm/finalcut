@@ -99,7 +99,7 @@ auto generateDataPattern() noexcept -> std::array<wchar_t, 256>
   return arr;
 }
 
-} // namespace
+} // anonymous namespace
 
 
 //----------------------------------------------------------------------

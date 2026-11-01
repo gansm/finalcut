@@ -46,6 +46,9 @@ namespace finalcut
 namespace internal
 {
 
+// forward declaration
+void updatePlainUTF8OutputFlag();
+
 template <typename T>
 constexpr auto clampValue (T value, T minVal, T maxVal) -> T
 {
@@ -746,12 +749,12 @@ inline void FTermOutput::processCharacterOutput ( uInt& x
   }
   else if ( ctx.has_rep )  // Repeat one character n-fold
   {
-    repeatCharacter(x, ctx.xmax, term_pos->getY(), iter);
+    repeatCharacter(x, ctx.xmax, uInt(term_pos->getY()), iter);
   }
   else  // The general character output
   {
     bool min_and_not_max{x == ctx.xmin && ctx.xmin != ctx.xmax};
-    printCharacter(x, term_pos->getY(), min_and_not_max, iter);
+    printCharacter(x, uInt(term_pos->getY()), min_and_not_max, iter);
   }
 }
 

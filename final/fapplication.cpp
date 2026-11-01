@@ -790,6 +790,13 @@ inline auto FApplication::getStartOptions() -> FStartOptions&
 }
 
 //----------------------------------------------------------------------
+auto FApplication::getEmptyList() -> FWidgetList&
+{
+  static const auto& empty_list = std::make_unique<FWidgetList>();
+  return *empty_list;
+}
+
+//----------------------------------------------------------------------
 void FApplication::showParameterUsage()
 {
   std::cout \

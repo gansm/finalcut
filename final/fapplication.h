@@ -189,6 +189,7 @@ class FApplication : public FWidget
     static void  setCmdOptionsMap (CmdMap&);
     static void  cmdOptions (const Args&);
     static auto  getStartOptions() -> FStartOptions&;
+    static auto  getEmptyList() -> FWidgetList&;
     static void  showParameterUsage();
     void         resetLog() const;
     void         findKeyboardWidget() const;
@@ -299,8 +300,7 @@ inline auto FApplication::getWidgetCloseList() -> FWidgetList&
 
   if ( ! app_object )
   {
-    static FWidget::FWidgetList empty_list;
-    return empty_list;
+    return getEmptyList();
   }
 
   return app_object->close_widget_list;

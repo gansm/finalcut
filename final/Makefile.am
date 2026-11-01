@@ -190,9 +190,11 @@ finalcututilinclude_HEADERS = \
 finalcutvterminclude_HEADERS = \
 	vterm/fcolorpair.h \
 	vterm/fstyle.h \
+	vterm/fvterm.h \
 	vterm/fvtermattribute.h \
 	vterm/fvtermbuffer.h \
-	vterm/fvterm.h
+        vterm/fvtermcompositor.h \
+        vterm/fvtermpainter.h
 
 finalcutwidgetinclude_HEADERS = \
 	widget/fbusyindicator.h \

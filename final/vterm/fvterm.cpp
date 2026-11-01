@@ -38,6 +38,8 @@
 #include "final/vterm/fcolorpair.h"
 #include "final/vterm/fstyle.h"
 #include "final/vterm/fvterm.h"
+#include "final/vterm/fvtermcompositor.h"
+#include "final/vterm/fvtermpainter.h"
 
 namespace finalcut
 {
@@ -129,6 +131,658 @@ static auto getTransparentInvisibleLookupMap() -> TransparentInvisibleLookupMap
 
   return *trans_inv_lookup;
 }
+
+//----------------------------------------------------------------------
+// Helper functions without access to FVTerm instance data
+//----------------------------------------------------------------------
+namespace
+{
+
+using FTermRegion = FVTerm::FTermRegion;
+using FChar_iterator = std::vector<FChar>::iterator;
+using FChar_const_iterator = std::vector<FChar>::const_iterator;
+
+constexpr int DEFAULT_MINIMIZED_HEIGHT = 1;
+
+constexpr auto getFullRegionWidth (const FTermRegion* region) noexcept -> int
+{
+  return region->size.width + region->shadow.width;
+}
+
+//----------------------------------------------------------------------
+constexpr auto getFullRegionHeight (const FTermRegion* region) noexcept -> int
+{
+  return region->size.height + region->shadow.height;
+}
+
+//----------------------------------------------------------------------
+constexpr auto needsWidthResize ( const FTermRegion* region
+                                , const std::size_t full_width ) noexcept -> bool
+{
+  return getFullRegionWidth(region) != int(full_width);
+}
+
+//----------------------------------------------------------------------
+constexpr auto needsHeightResize ( const FTermRegion* region
+                                 , const std::size_t full_height ) noexcept -> bool
+{
+  return getFullRegionHeight(region) != int(full_height);
+}
+
+//----------------------------------------------------------------------
+inline auto resizeTextRegion (FTermRegion* region, std::size_t size) -> bool
+{
+  // Resize text region to "size" FChar elements
+
+  region->data.resize(size);
+  return true;
+}
+
+//----------------------------------------------------------------------
+inline auto resizeTextRegion ( FTermRegion* region
+                             , std::size_t height
+                             , std::size_t size ) -> bool
+{
+  // Set the number of lines for changes to "height"
+  // and resize the text region to "size" elements
+
+  region->changes_in_line.resize(height);
+  resizeTextRegion (region, size);
+  return true;
+}
+
+//----------------------------------------------------------------------
+inline auto tryResizeRegion ( FTermRegion* region
+                            , const std::size_t width
+                            , const std::size_t height ) -> bool
+{
+  if ( needsHeightResize(region, height) )
+    return resizeTextRegion(region, height, width * height);
+
+  if ( needsWidthResize(region, width) )
+    return resizeTextRegion(region, width * height);
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline void resetTextRegionToDefault ( FTermRegion* region
+                                     , const FSize& size ) noexcept
+{
+  static constexpr FChar default_char
+  {
+    { L' ',  L'\0', L'\0', L'\0', L'\0' },
+    default_color_pair,
+    { 0x00080000U }  // char_width = 1
+  };
+  std::fill (region->data.begin(), region->data.end(), default_char);
+
+  const FTermRegion::FLineChanges unchanged { uInt(size.getWidth())
+                                            , 0, 0, false };
+  std::fill (region->changes_in_line.begin(), region->changes_in_line.end(), unchanged);
+  region->changes_in_row = { uInt(size.getHeight()), 0};
+}
+
+//----------------------------------------------------------------------
+inline auto isRegionValid (const FRect& box) noexcept -> bool
+{
+  return box.getY() >= 0
+      && box.getWidth() > 0
+      && box.getHeight() > 0;
+}
+
+//----------------------------------------------------------------------
+inline auto isSizeEqual ( const FTermRegion* region
+                        , const FRect& box
+                        , const FSize& shadow ) noexcept -> bool
+{
+  return region->size.width == int(box.getWidth())
+      && region->size.height == int(box.getHeight())
+      && region->shadow.width == int(shadow.getWidth())
+      && region->shadow.height == int(shadow.getHeight());
+}
+
+//----------------------------------------------------------------------
+inline void updateRegionProperties ( FTermRegion* region
+                                   , const FRect& box
+                                   , const FSize& shadow ) noexcept
+{
+  region->position.x      = box.getX();
+  region->position.y      = box.getY();
+  region->size.width      = int(box.getWidth());
+  region->size.height     = int(box.getHeight());
+  region->min_size.width  = region->size.width;
+  region->min_size.height = DEFAULT_MINIMIZED_HEIGHT;
+  region->shadow.width    = int(shadow.getWidth());
+  region->shadow.height   = int(shadow.getHeight());
+  FVTerm::setDirty (region, false);
+}
+
+//----------------------------------------------------------------------
+inline auto calculateStartCoordinate (int region_min, int win_min) noexcept -> int
+{
+  return std::max({0, region_min, win_min}) - win_min;
+}
+
+//----------------------------------------------------------------------
+inline auto calculateEndCoordinate ( int vterm_max, int region_max
+                                   , int win_min, int win_max ) noexcept -> int
+{
+  return std::min({vterm_max, region_max, win_max}) - win_min;
+}
+
+//----------------------------------------------------------------------
+constexpr auto isInsideRegion ( const FPoint& pos
+                              , const FTermRegion* region ) noexcept -> bool
+{
+  // Check whether the coordinates are within the region
+
+  const int x = pos.getX();
+  const int y = pos.getY();
+  return x >= 0 && x < region->size.width
+      && y >= 0 && y < region->size.height;
+}
+
+//----------------------------------------------------------------------
+auto hasPendingUpdates (const FTermRegion* region) noexcept -> bool
+{
+  return (region && region->has_changes);
+}
+
+//----------------------------------------------------------------------
+inline void resetLineCoveredState (FTermRegion* src)
+{
+  auto changes = src->changes_in_line.begin();
+  const auto changes_end = src->changes_in_line.end();
+
+  // Unrolled loop for better performance
+  while ( changes + 4 < changes_end )
+  {
+    changes[0].covered = false;
+    changes[1].covered = false;
+    changes[2].covered = false;
+    changes[3].covered = false;
+    changes += 4;
+  }
+
+  while ( changes < changes_end )  // Handle remaining lines
+  {
+    changes->covered = false;
+    ++changes;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void determineLineCoveredState ( const FTermRegion* const win
+                                      , FTermRegion* src ) noexcept
+{
+  // Requirements: The two regions have been checked for overlap
+
+  const int win_height = win->minimized ? win->min_size.height
+                                        : getFullRegionHeight(win);
+  const int src_height = src->minimized ? src->min_size.height
+                                        : getFullRegionHeight(src);
+  const int win_y_min = win->position.y;
+  const int win_y_max = win_y_min + win_height;
+  const int src_y_min = src->position.y;
+  const int src_y_max = src_y_min + src_height;
+  const int overlap_start = std::max(win_y_min, src_y_min);
+  const int overlap_end = std::min(win_y_max, src_y_max);
+  const auto start = overlap_start - src_y_min;
+  const auto end = overlap_end - src_y_min;
+  auto changes_base = src->changes_in_line.begin();
+  auto changes = changes_base + start;
+  const auto changes_end = changes_base + end;
+
+  // Unrolled loop for better performance
+  while ( changes + 4 <= changes_end )
+  {
+    changes[0].covered = true;
+    changes[1].covered = true;
+    changes[2].covered = true;
+    changes[3].covered = true;
+    changes += 4;
+  }
+
+  while ( changes < changes_end )  // Handle remaining lines
+  {
+    changes->covered = true;
+    ++changes;
+  }
+}
+
+//----------------------------------------------------------------------
+constexpr auto isFCharTransparent (const FChar& fchar) noexcept -> bool
+{
+  return fchar.isBitSet(internal::var::transparent_mask);
+}
+
+//----------------------------------------------------------------------
+inline auto isTransparentInvisible (const FChar& fchar) noexcept -> bool
+{
+  static const auto& trans_inv_chars = getTransparentInvisibleLookupMap();
+  const auto& fist_char = fchar.ch.unicode_data[0];
+  return trans_inv_chars.find(fist_char) != trans_inv_chars.end();
+}
+
+//----------------------------------------------------------------------
+inline void putRegionLine ( const FChar& src_char
+                          , FChar& dst_char
+                          , const int length ) noexcept
+{
+  // copy "length" characters from region to terminal
+
+  std::memcpy (&dst_char, &src_char, std::size_t(length) * sizeof(dst_char));
+}
+
+//----------------------------------------------------------------------
+inline void applyColorOverlay (const FChar& src_char, FChar& dst_char)
+{
+  dst_char.ch = src_char.ch;  // Get covered character
+  dst_char.unsetBit(internal::var::color_overlay_reset_mask);
+
+  if ( isTransparentInvisible(dst_char) )
+    dst_char.ch[0] = L' ';
+}
+
+//----------------------------------------------------------------------
+inline void inheritBackground (const FChar& src_char, FChar& dst_char)
+{
+  // Add the covered background to this character
+  copyBgColor(src_char.color, dst_char.color);
+}
+
+//----------------------------------------------------------------------
+inline void addTransparentRegionChar (const FChar& src_char, FChar& dst_char)
+{
+  if ( src_char.isBitSet(FAttribute::set::transparent) )  // Transparent
+    return;  // Leave character on vterm untouched
+
+  if ( src_char.isBitSet(FAttribute::set::color_overlay) )  // Color overlay
+  {
+    // Get covered character + add the current color
+    dst_char.color.data = src_char.color.data;
+    dst_char.attr.data = src_char.attr.data & internal::var::color_overlay_reset_mask;
+
+    if ( isTransparentInvisible(dst_char) )
+      dst_char.ch[0] = L' ';
+
+    return;
+  }
+
+  if ( src_char.isBitSet(FAttribute::set::inherit_background) )
+  {
+    // Add the covered background to this character
+    auto bg_color = dst_char.color.getBgColor();
+    dst_char = src_char;
+    dst_char.color.setBgColor(bg_color);
+    dst_char.unsetBit(internal::var::print_reset_mask);
+    return;
+  }
+
+  // Default
+  dst_char = src_char;
+}
+
+//----------------------------------------------------------------------
+inline void addTransparentRegionLine ( const FChar_const_iterator& src_char
+                                     , const FChar_iterator& dst_char
+                                     , const int length )
+{
+  auto src = src_char;
+  auto dst = dst_char;
+  auto end = src + length;
+
+  while ( src < end )  // column loop
+  {
+    addTransparentRegionChar (*src, *dst);
+    ++src;  // src character
+    ++dst;  // dst character
+  }
+}
+
+//----------------------------------------------------------------------
+inline void putNonTransparent ( FChar_const_iterator start_char
+                              , FChar_iterator& dst_char
+                              , int& non_trans_count )
+{
+  if ( non_trans_count == 0 )
+    return;
+
+  putRegionLine(*start_char, *dst_char, non_trans_count);
+  dst_char += non_trans_count;  // dst character
+  non_trans_count = 0;
+}
+
+//----------------------------------------------------------------------
+inline void addTransparent ( FChar_const_iterator start_char
+                           , FChar_iterator& dst_char
+                           , int& trans_count )
+{
+  if ( trans_count == 0 )
+    return;
+
+  addTransparentRegionLine (start_char, dst_char, trans_count);
+  dst_char += trans_count;  // dst character
+  trans_count = 0;
+}
+
+//----------------------------------------------------------------------
+inline void addRegionLineWithTransparency ( FChar_const_iterator src_char
+                                          , FChar_iterator dst_char
+                                          , const int length )
+{
+  if ( length == 0 )
+    return;
+
+  const auto handle_region = \
+      [&dst_char] ( bool transparent
+                        , int count
+                        , FChar_const_iterator start )
+  {
+    if ( transparent )
+      addTransparent (start, dst_char, count);
+    else
+      putNonTransparent (start, dst_char, count);
+  };
+
+  const auto end_char = src_char + length;
+  auto region_start = src_char;
+  int region_count{1};
+  bool is_region_transparent{isFCharTransparent(*src_char)};
+
+  for (auto current_char = src_char + 1; current_char < end_char; ++current_char)
+  {
+    const bool is_current_char_transparent = isFCharTransparent(*current_char);
+
+    if ( is_current_char_transparent == is_region_transparent )
+      ++region_count;
+    else
+    {
+      handle_region (is_region_transparent, region_count, region_start);
+      // Reset for the next region
+      is_region_transparent = is_current_char_transparent;
+      region_start = current_char;
+      region_count = 1;
+    }
+  }
+
+  // Handle the final region
+  handle_region (is_region_transparent, region_count, region_start);
+}
+
+//----------------------------------------------------------------------
+inline auto isComplexChar (const FChar& fchar) -> bool
+{
+  const auto ch0 = fchar.ch.unicode_data[0];
+  return fchar.getCharWidth() != 1
+      || fchar.isBitSet(FAttribute::set::fullwidth_padding)
+      || ch0 == L'\n' || ch0 == L'\r' || ch0 == L'\t'
+      || ch0 == L'\b' || ch0 == L'\a';
+}
+
+//----------------------------------------------------------------------
+auto printPlain (FTermRegion* region, const FString& string) noexcept -> int
+{
+  if ( ! region )
+    return -1;
+
+  const auto len = int(string.getLength());
+  const int region_width  = getFullRegionWidth(region);
+  const int region_height = getFullRegionHeight(region);
+  const int x = region->cursor.x;
+  const int y = region->cursor.y;
+  const int room = region_width - x + 1;  // Characters left in this row, including column x
+
+  if ( len <= 0 || x < 1 || y < 1 || y > region_height || len > room )
+    return -1;
+
+  static const auto& next_attribute = FVTermAttribute::getAttribute();
+  FChar fchar{};
+  fchar.color.data = next_attribute.color.data;
+  fchar.attr.data  = next_attribute.attr.data & internal::fvtermbuf_var::attr_mask;
+  fchar.setCharWidth(1);
+
+  const bool trans_new = fchar.isBitSet(internal::var::print_transparent_mask);
+  const auto ax = unsigned(x - 1);
+  const auto ay = unsigned(y - 1);
+  auto rc = region->getFCharIterator(x - 1, y - 1);
+  const auto src = string.cbegin();
+
+  uInt cmin{~0U};
+  uInt cmax{0};
+  uInt trans_added{0};
+  int  n{0};
+  bool ok{true};
+
+  while ( ok && n < len )
+  {
+    const auto c = src[n];
+
+    if ( c < 0x20 || c > 0x7e )  // Control, DEL or non-ASCII
+    {
+      ok = false;
+      continue;
+    }
+
+    fchar.ch.unicode_data[0] = c;
+
+    if ( *rc == fchar )
+    {
+      if ( rc->getCharWidth() != 1 )
+      {
+        ok = false;
+        continue;
+      }
+
+      ++n;
+      ++rc;
+      continue;
+    }
+
+    const bool trans_old = rc->isBitSet(internal::var::print_transparent_mask);
+    trans_added += uInt(int(trans_new) - int(trans_old));
+    *rc = fchar;
+    cmin = std::min(cmin, ax + uInt(n));
+    cmax = ax + uInt(n);  // Columns increase, so the last write is the max
+    ++n;
+    ++rc;
+  }
+
+  if ( n > 0 )
+  {
+    FVTerm::setDirty (region);
+    auto& line = region->changes_in_line[ay];
+    line.trans_count += trans_added;
+
+    if ( cmin != ~0U )  // At least one character changed
+    {
+      line.xmin = std::min(line.xmin, cmin);
+      line.xmax = std::max(line.xmax, cmax);
+      region->changes_in_row.ymin = std::min(region->changes_in_row.ymin, ay);
+      region->changes_in_row.ymax = std::max(region->changes_in_row.ymax, ay);
+    }
+  }
+
+  if ( ! ok )
+    return -1;
+
+  if ( x + len > region_width )  // Line break at right margin
+  {
+    region->cursor.x = 1;
+    region->cursor.y = ( y >= region_height ) ? y : y + 1;  // Prevent up scrolling
+  }
+  else
+    region->cursor.x = x + len;
+
+  return len;  // Number of printed characters, or -1 if the caller must use the general path
+}
+
+//----------------------------------------------------------------------
+inline auto printWrap (FTermRegion* region, FChar_iterator& rc) -> bool
+{
+  bool end_of_region{false};
+  const int& width  = region->size.width;
+  const int& height = region->size.height;
+  const int& rsh    = region->shadow.width;
+  const int& bsh    = region->shadow.height;
+
+  // Line break at right margin
+  if ( region->cursor.x > width + rsh )
+  {
+    region->cursor.x = 1;
+    region->cursor.y++;
+    rc = region->getFCharIterator(region->cursor.x - 1, region->cursor.y - 1);
+  }
+
+  // Prevent up scrolling
+  if ( region->cursor.y > height + bsh )
+  {
+    region->cursor.y--;
+    rc = region->getFCharIterator(region->cursor.x - 1, region->cursor.y - 1);
+    end_of_region = true;
+  }
+
+  return end_of_region;
+}
+
+//----------------------------------------------------------------------
+#if defined(__GNUC__)
+__attribute__((noinline))
+#endif
+auto printRegionRange ( FTermRegion* region
+                      , FChar_iterator& rc
+                      , FVTermBuffer::const_iterator first
+                      , FVTermBuffer::const_iterator last ) noexcept -> int
+{
+  const int region_width = getFullRegionWidth(region);
+  const int region_height = getFullRegionHeight(region);
+  const int x = region->cursor.x;
+  const int y = region->cursor.y;
+
+  // Fast path covers columns x .. region_width - 1; the last column (which wraps)
+  if ( x < 1 || y < 1 || x >= region_width || y > region_height )
+    return 0;
+
+  const auto max_n = std::min(region_width - x, int(last - first));
+  const auto ax = unsigned(x - 1);
+  const auto ay = unsigned(y - 1);
+  uInt cmin{~0U};  // first changed column
+  uInt cmax{0};    // last changed column
+  uInt trans_added{0};
+  int  n{0};
+
+  for (; n < max_n; ++n)
+  {
+    const FChar& ch = first[FVTermBuffer::difference_type(n)];
+
+    if ( isComplexChar(ch) || (*rc == ch && rc->getCharWidth() != 1) )
+      break;  // Let printComplexChar() handle it
+
+    if ( *rc != ch )
+    {
+      const bool trans_old = rc->isBitSet(internal::var::print_transparent_mask);
+      const bool trans_new = ch.isBitSet(internal::var::print_transparent_mask);
+      trans_added += uInt(int(trans_new) - int(trans_old));
+      *rc = ch;
+      cmin = std::min(cmin, ax + uInt(n));
+      cmax = ax + uInt(n);   // Columns increase, so the last write is the max
+    }
+
+    ++rc;
+  }
+
+  if ( n == 0 )
+    return 0;
+
+  region->cursor.x = x + n;
+  FVTerm::setDirty (region);
+
+  auto& line = region->changes_in_line[ay];
+  line.trans_count += trans_added;
+
+  if ( cmin != ~0U )  // At least one cell actually changed
+  {
+    line.xmin = std::min(line.xmin, cmin);
+    line.xmax = std::max(line.xmax, cmax);
+    region->changes_in_row.ymin = std::min(region->changes_in_row.ymin, ay);
+    region->changes_in_row.ymax = std::max(region->changes_in_row.ymax, ay);
+  }
+
+  return n;
+}
+
+//----------------------------------------------------------------------
+inline auto printCharacterOnCoordinate ( FTermRegion* region
+                                       , const FChar_iterator& rc
+                                       , const FChar& ch ) noexcept -> std::size_t
+{
+  const auto ax = unsigned(region->cursor.x - 1);
+  const auto ay = unsigned(region->cursor.y - 1);
+
+  if ( *rc == ch )  // compare with an overloaded operator
+    return rc->getCharWidth();
+
+  const bool trans_old = rc->isBitSet(internal::var::print_transparent_mask);
+  const bool trans_new = ch.isBitSet(internal::var::print_transparent_mask);
+  const auto trans_changed = int(trans_new) - int(trans_old);
+
+  if ( trans_changed != 0 )
+    region->changes_in_line[ay].trans_count += uInt(trans_changed);
+
+  // copy character to region
+  *rc = ch;
+
+  auto current_width = uInt8(rc->getCharWidth());
+
+  if ( current_width == 0 )
+  {
+    const auto new_char_width = getColumnWidth(rc->ch[0]);
+
+    if ( new_char_width == 0 )
+      return 0;
+
+    addColumnWidth(*rc, new_char_width);  // Add column width
+    current_width = uInt8(new_char_width);
+  }
+
+  region->updateRegionChanges (ax, ay, current_width);
+  return current_width;
+}
+
+//----------------------------------------------------------------------
+inline void clearRegionWithShadow (FTermRegion* region, const FChar& fillchar) noexcept
+{
+  FChar t_char = fillchar;
+  t_char.ch[0] = L'\0';
+  t_char.setBit(FAttribute::set::transparent);
+  t_char.setCharWidth(0);
+  const auto total_width = getFullRegionWidth(region);
+  auto region_pos = region->data.begin();
+  auto shadow_begin = region->data.begin() + region->size.width;
+
+  for (auto y{0}; y < region->size.height; y++)
+  {
+    // Clear region
+    std::fill (region_pos, region_pos + region->size.width, fillchar);
+    // Make right shadow transparent
+    std::fill (shadow_begin, shadow_begin + region->shadow.width, t_char);
+    region_pos += total_width;
+    shadow_begin += total_width;
+  }
+
+  // Make bottom shadow transparent
+  region_pos = region->data.begin() + (total_width * region->size.height);
+
+  for (auto y{0}; y < region->shadow.height; y++)
+  {
+    std::fill (region_pos, region_pos + total_width, t_char);
+    region_pos += total_width;
+  }
+}
+
+}  // anonymous namespace
+
 
 //----------------------------------------------------------------------
 // class FVTerm
@@ -465,7 +1119,8 @@ auto FVTerm::print (const std::vector<FChar>& term_string) noexcept -> int
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermRegion* region, const std::vector<FChar>& term_string) noexcept -> int
+auto FVTerm::print ( FTermRegion* region
+                   , const std::vector<FChar>& term_string ) noexcept -> int
 {
   if ( ! region || term_string.empty() )
     return -1;
@@ -495,7 +1150,8 @@ auto FVTerm::print (const FVTermBuffer& buffer) noexcept -> int
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermRegion* region, FVTermBuffer& buffer) const noexcept -> int
+auto FVTerm::print ( FTermRegion* region
+                   , FVTermBuffer& buffer ) const noexcept -> int
 {
   auto len = print (region, static_cast<const FVTermBuffer&>(buffer));
   buffer.clear();  // Clear FVTermBuffer after printing
@@ -503,32 +1159,11 @@ auto FVTerm::print (FTermRegion* region, FVTermBuffer& buffer) const noexcept ->
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermRegion* region, const FVTermBuffer& buffer) const noexcept -> int
+auto FVTerm::print ( FTermRegion* region
+                   , const FVTermBuffer& buffer ) const noexcept -> int
 {
-  if ( ! region || buffer.isEmpty() )
-    return -1;
-
-  int len{0};
-  auto rc = region->getFCharIterator( region->cursor.x - 1
-                                    , region->cursor.y - 1 );  // Region character iterator
-  auto iter = buffer.begin();
-  const auto last = buffer.end();
-
-  while ( iter != last )
-  {
-    const auto n = printRegionRange(region, rc, iter, last);  // Fast path
-    len += n;
-    iter += FVTermBuffer::difference_type(n);
-
-    if ( iter == last
-      || printComplexChar(region, rc, *iter) == -1 )  // Print next character
-      break;  // No region or end of region reached
-
-    ++len;
-    ++iter;
-  }
-
-  return len;
+  const FVTermPainter painter{*this};
+  return painter.print (region, buffer);
 }
 
 //----------------------------------------------------------------------
@@ -561,16 +1196,12 @@ auto FVTerm::print (const FChar& term_char) noexcept -> int
 }
 
 //----------------------------------------------------------------------
-auto FVTerm::print (FTermRegion* region, const FChar& term_char) const noexcept -> int
+auto FVTerm::print ( FTermRegion* region
+                   , const FChar& term_char ) const noexcept -> int
 {
-  if ( ! region )
-    return -1;  // No region
-
-  auto rc = region->getFCharIterator( region->cursor.x - 1
-                                    , region->cursor.y - 1 );  // Region character iterator
-  return printComplexChar(region, rc, term_char);
+  const FVTermPainter painter{*this};
+  return painter.print (region, term_char);
 }
-
 //----------------------------------------------------------------------
 void FVTerm::flush() const
 {
@@ -629,12 +1260,14 @@ void FVTerm::resizeRegion ( const FShadowBox& shadowbox
 {
   // Resize the virtual window to a new size
 
-  assert ( isRegionValid(shadowbox) );
+  const bool region_valid = isRegionValid(shadowbox.box);
+  assert ( region_valid );
+  static_cast<void>(region_valid);
 
   if ( ! region )
     return;
 
-  if ( isSizeEqual(region, shadowbox) )
+  if ( isSizeEqual(region, shadowbox.box, shadowbox.shadow) )
   {
     region->position.x = shadowbox.box.getX();
     region->position.y = shadowbox.box.getY();
@@ -649,7 +1282,7 @@ void FVTerm::resizeRegion ( const FShadowBox& shadowbox
   if ( ! tryResizeRegion(region, full_width, full_height) )
     return;
 
-  updateRegionProperties (region, shadowbox);
+  updateRegionProperties (region, shadowbox.box, shadowbox.shadow);
   // Set default FChar in region
   resetTextRegionToDefault (region, { FSize{full_width, full_height} });
 }
@@ -709,7 +1342,8 @@ auto FVTerm::updateVTermCursor (const FTermRegion* region) const noexcept -> boo
 
     if ( isInsideRegion (FPoint{cx, cy}, region)
       && isInsideTerminal (FPoint{x, y})
-      && isCovered (FPoint{x, y}, region) == CoveredState::None )
+      && FVTermCompositor{*this}.isCovered (FPoint{x, y}, region)
+          == CoveredState::None )
     {
       vterm->setInputCursorPos(x, y);
       vterm->input_cursor_visible = true;
@@ -827,35 +1461,8 @@ void FVTerm::getRegion (const FRect& box, FTermRegion* region) const noexcept
 //----------------------------------------------------------------------
 void FVTerm::addLayer (FTermRegion* region) const noexcept
 {
-  // Transmit changes in region to the virtual terminal (add layer to vterm)
-
-  if ( ! region || ! region->visible )
-    return;
-
-  // Compute geometry and decide early whether to render
-  LayerGeometry geometry = computeLayerGeometry(region);
-
-  // Early exit if region is completely outside vterm
-  if ( ! isLayerOutsideVTerm(geometry) )
-    return;
-
-  // Call the preprocessing handler methods (child region change handling)
-  callPreprocessingHandler(region);
-
-  // Create a stack by combining identical rows in sequence
-  std::lock_guard<std::mutex> line_changes_batch_lock(line_changes_batch_mutex);
-  line_changes_batch.clear();  // Clear buffer
-  buildLineChangeBatch(region, geometry, line_changes_batch);
-
-  if ( line_changes_batch.empty() )
-    return;
-
-  // Apply the batches to vterm data
-  applyLineBatch(region, geometry, line_changes_batch);
-
-  // Update the range of changed rows and the cursor on vterm
-  updateVTermChangesFromBatch(geometry, line_changes_batch);
-  updateVTermCursor(region);
+  const FVTermCompositor compositor{*this};
+  compositor.addLayer (region);
 }
 
 //----------------------------------------------------------------------
@@ -873,70 +1480,8 @@ void FVTerm::putRegion (const FPoint& pos, FTermRegion* region) const noexcept
 void FVTerm::copyRegion ( FTermRegion* dst, const FPoint& pos
                         , FTermRegion* src ) const noexcept
 {
-  // Copies the src region to the dst region position
-
-  if ( ! dst || ! src )
-    return;
-
-  const auto dst_is_vterm = bool( dst == vterm.get() );
-  const int src_width = getFullRegionWidth(src);
-  const int dst_width = getFullRegionWidth(dst);
-  const int src_height = src->minimized
-                       ? src->min_size.height
-                       : getFullRegionHeight(src);
-  const int pos_x = pos.getX();
-  const int pos_y = pos.getY();
-  const int ax = std::max(1, pos_x) - 1;
-  const int ay = std::max(1, pos_y) - 1;
-  const int ol = std::max(0, 1 - pos_x);  // outside left
-  const int ot = std::max(0, 1 - pos_y);  // outside top
-  const int y_end = std::min(dst->size.height - ay, src_height - ot);
-  const int length = std::min(dst->size.width - ax, src_width - ol);
-
-  if ( length < 1 || y_end < 1 )
-    return;
-
-  auto src_changes = src->changes_in_line.cbegin();
-  auto dst_changes = dst->changes_in_line.begin() + ay;
-  auto sc = src->data.cbegin() + (src_width * ot) + ol;  // src character ptr
-  auto dc = dst->data.begin() + (dst_width * ay) + ax;  // dst character ptr
-
-  // Protect: covered_regions_buffer, overlay_search_buffer,
-  //          and overlay_line_buffer
-  std::lock_guard<std::mutex> buffers_lock(buffer_mutex);
-
-  if ( dst_is_vterm )  // dst is the virtual terminal
-    determineCoveredRegions(src);
-
-  const auto x_max = uInt(ax + length - 1);
-  const auto y_max = uInt(ay + y_end - 1);
-
-  for (int y{0}; y < y_end; y++)  // line loop
-  {
-    if ( dst_is_vterm && src_changes->trans_count > 0 )
-    {
-      // Line with hidden and transparent characters
-      RegionRenderContext ctx{ sc, dc, 1, {ax, ay + y}, false
-                             , src_changes->covered };
-      putRegionLineWithTransparency(ctx, length);
-    }
-    else
-    {
-      // Line has only covered characters
-      putRegionLine (*sc, *dc, length);
-    }
-
-    dst_changes->xmin = std::min(dst_changes->xmin, uInt(ax));
-    dst_changes->xmax = std::max(dst_changes->xmax, x_max);
-    ++src_changes;
-    ++dst_changes;
-    sc += src_width;
-    dc += dst_width;
-  }
-
-  dst->changes_in_row.ymin = std::min(dst->changes_in_row.ymin, uInt(ay));
-  dst->changes_in_row.ymax = std::max(dst->changes_in_row.ymax, y_max);
-  setDirty(dst);
+  const FVTermCompositor compositor{*this};
+  compositor.copyRegion (dst, pos, src);
 }
 
 //----------------------------------------------------------------------
@@ -1068,7 +1613,7 @@ void FVTerm::clearRegion (FTermRegion* region, wchar_t fillchar) noexcept
 
   if ( region->shadow.width == 0 )
   {
-    if ( clearFullRegion(region, nc) )
+    if ( FVTermPainter{*this}.clearFullRegion(region, nc) )
       return;
   }
   else
@@ -1125,7 +1670,7 @@ auto FVTerm::processTerminalUpdate() const -> bool
     return false;
 
   // Update data on the virtual terminal (VTerm)
-  updateVTerm();
+  FVTermCompositor{*this}.updateVTerm();
 
   // Update the terminal output buffer
   return updateTerminalBuffer();
@@ -1199,490 +1744,6 @@ void FVTerm::resetRegionEncoding() const
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::resetTextRegionToDefault ( FTermRegion* region
-                                             , const FSize& size ) const noexcept
-{
-  static constexpr FChar default_char
-  {
-    { L' ',  L'\0', L'\0', L'\0', L'\0' },
-    default_color_pair,
-    { 0x00080000U }  // char_width = 1
-  };
-  std::fill (region->data.begin(), region->data.end(), default_char);
-
-  const FTermRegion::FLineChanges unchanged { uInt(size.getWidth())
-                                            , 0, 0, false };
-  std::fill (region->changes_in_line.begin(), region->changes_in_line.end(), unchanged);
-  region->changes_in_row = { uInt(size.getHeight()), 0};
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::resizeTextRegion ( FTermRegion* region
-                                     , std::size_t height
-                                     , std::size_t size ) const -> bool
-{
-  // Set the number of lines for changes to "height"
-  // and resize the text region to "size" elements
-
-  region->changes_in_line.resize(height);
-  resizeTextRegion (region, size);
-  return true;
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::resizeTextRegion (FTermRegion* region, std::size_t size) const -> bool
-{
-  // Resize text region to "size" FChar elements
-
-  region->data.resize(size);
-  return true;
-}
-
-//----------------------------------------------------------------------
-auto FVTerm::isCovered (const FPoint& pos, const FTermRegion* region) const noexcept -> CoveredState
-{
-  // Determines the covered state for the given position
-
-  const auto* vterm_win_list{getWindowList()};
-
-  if ( ! region || ! vterm_win_list || vterm_win_list->empty()
-    || vterm_win_list->back()->getVWin() == region )  // Top window can't be covered
-    return CoveredState::None;
-
-  const auto pos_x = pos.getX();
-  const auto pos_y = pos.getY();
-
-  auto is_covered{CoveredState::None};  // Initial state: no coverage
-  bool found{ region == vdesktop.get() };
-
-  for (const auto& vterm_obj : *vterm_win_list)  // Iteration through window list
-  {
-    const auto* win = vterm_obj->getVWin();
-
-    if ( ! win || ! win->visible )
-      continue;
-
-    if ( ! found )  // Check if we've found the target region yet
-    {
-      found = ( region == win );
-      continue;
-    }
-
-    const int win_x_min = win->position.x;
-    const int win_y_min = win->position.y;
-
-    if ( pos_x < win_x_min || pos_y < win_y_min )
-      continue;
-
-    const int current_height = win->minimized ? win->min_size.height
-                                              : getFullRegionHeight(win);
-    const int win_x_max = win_x_min + getFullRegionWidth(win);
-    const int win_y_max = win_y_min + current_height;
-
-    if ( pos_x >= win_x_max || pos_y >= win_y_max )
-      continue;
-
-    // Position is covered by this window - check for transparency
-    const auto delta_x = pos_x - win->position.x;
-    const auto delta_y = pos_y - win->position.y;
-    const auto width = getFullRegionWidth(win);
-    const auto index = unsigned(delta_y) * unsigned(width) + unsigned(delta_x);
-    const auto& character = win->data[index];
-
-    if ( character.isBitSet(FAttribute::set::transparent) )
-      continue;
-
-    if ( character.isBitSet(FAttribute::set::color_overlay) )  // Color overlay = half covered
-      is_covered = CoveredState::Half;  // Mark as partially covered
-    else
-      return CoveredState::Full;  // Fully covered
-  }
-
-  return is_covered;
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::isRegionValid (const FShadowBox& shadowbox) const noexcept -> bool
-{
-  return shadowbox.box.getY() >= 0
-      && shadowbox.box.getWidth() > 0
-      && shadowbox.box.getHeight() > 0;
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::isSizeEqual (const FTermRegion* region, const FShadowBox& shadowbox) const noexcept -> bool
-{
-  return region->size.width == int(shadowbox.box.getWidth())
-      && region->size.height == int(shadowbox.box.getHeight())
-      && region->shadow.width == int(shadowbox.shadow.getWidth())
-      && region->shadow.height == int(shadowbox.shadow.getHeight());
-}
-
-//----------------------------------------------------------------------
-constexpr auto FVTerm::needsHeightResize ( const FTermRegion* region
-                                         , const std::size_t full_height ) const noexcept -> bool
-{
-  return getFullRegionHeight(region) != int(full_height);
-}
-
-//----------------------------------------------------------------------
-constexpr auto FVTerm::needsWidthResize ( const FTermRegion* region
-                                        , const std::size_t full_width ) const noexcept -> bool
-{
-  return getFullRegionWidth(region) != int(full_width);
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::tryResizeRegion ( FTermRegion* region
-                                    , const std::size_t width
-                                    , const std::size_t height ) const -> bool
-{
-  if ( needsHeightResize(region, height) )
-    return resizeTextRegion(region, height, width * height);
-
-  if ( needsWidthResize(region, width) )
-    return resizeTextRegion(region, width * height);
-
-  return false;
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::updateRegionProperties ( FTermRegion* region
-                                           , const FShadowBox& shadowbox ) const noexcept
-{
-  region->position.x      = shadowbox.box.getX();
-  region->position.y      = shadowbox.box.getY();
-  region->size.width      = int(shadowbox.box.getWidth());
-  region->size.height     = int(shadowbox.box.getHeight());
-  region->min_size.width  = region->size.width;
-  region->min_size.height = DEFAULT_MINIMIZED_HEIGHT;
-  region->shadow.width    = int(shadowbox.shadow.getWidth());
-  region->shadow.height   = int(shadowbox.shadow.getHeight());
-  setDirty(region, false);
-}
-
-//----------------------------------------------------------------------
-constexpr auto FVTerm::getFullRegionWidth (const FTermRegion* region) const noexcept -> int
-{
-  return region->size.width + region->shadow.width;
-}
-
-//----------------------------------------------------------------------
-constexpr auto FVTerm::getFullRegionHeight (const FTermRegion* region) const noexcept -> int
-{
-  return region->size.height + region->shadow.height;
-}
-
-//----------------------------------------------------------------------
-void FVTerm::passChangesToOverlap (const FTermRegion* region) const
-{
-  const auto* vterm_win_list = getWindowList();
-
-  if ( ! region || ! vterm_win_list || vterm_win_list->empty() )
-    return;
-
-  processOverlappingWindows (region, *vterm_win_list);
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::processOverlappingWindows ( const FTermRegion* region
-                                              , const FVTermList& vterm_win_list ) const
-{
-  bool found{false};
-
-  if ( ! region )
-    return;
-
-  for (const auto& vterm_obj : vterm_win_list)
-  {
-    auto* win = vterm_obj->getVWin();
-
-    if ( found && win && win->visible && win->isOverlapped(region) )
-    {
-      // Pass changes to the found window
-      passChangesToOverlappingWindow (win, region);
-    }
-
-    if ( region == win )
-      found = true;
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::passChangesToOverlappingWindow (FTermRegion* win, const FTermRegion* region) const noexcept
-{
-  setDirty(win);
-
-  // Boundaries
-  const int win_y_min = win->position.y;
-  const int win_height = win->minimized ? win->min_size.height : getFullRegionHeight(win);
-  const int win_y_max = win_y_min + win_height - 1;
-  const int region_y_min = region->position.y;
-  const int region_height = region->minimized ? region->min_size.height : getFullRegionHeight(region);
-  const int region_y_max = region_y_min + region_height - 1;
-  const int vterm_y_max = vterm->size.height - 1;
-
-  // Calculate start and end line
-  const int y_start = calculateStartCoordinate (region_y_min, win_y_min);
-  const int y_end = calculateEndCoordinate (vterm_y_max, region_y_max, win_y_min, win_y_max);
-
-  for (auto y{y_start}; y <= y_end; y++)  // Line loop
-  {
-    passChangesToOverlappingWindowLine (win, y, region);
-  }
-
-  win->changes_in_row = {uInt(y_start), uInt(y_end)};
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::passChangesToOverlappingWindowLine ( FTermRegion* win
-                                                       , int y
-                                                       , const FTermRegion* region ) const noexcept
-{
-  // Boundaries
-  const int win_x_min = win->position.x;
-  const int win_x_max = win_x_min + getFullRegionWidth(win) - 1;
-  const int region_x_min = region->position.x;
-  const int region_x_max = region_x_min + getFullRegionWidth(region) - 1;
-  const int vterm_x_max = vterm->size.width - 1;
-
-  // Calculate start and end position
-  const int x_start = calculateStartCoordinate (region_x_min, win_x_min);
-  const int x_end = calculateEndCoordinate (vterm_x_max, region_x_max, win_x_min, win_x_max);
-
-  // Sets the new change boundaries
-  auto& line_changes = win->changes_in_line[unsigned(y)];
-  line_changes.xmin = uInt(std::min(int(line_changes.xmin), x_start));
-  line_changes.xmax = uInt(std::max(int(line_changes.xmax), x_end));
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::calculateStartCoordinate (int region_min, int win_min) const noexcept -> int
-{
-  return std::max({0, region_min, win_min}) - win_min;
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::calculateEndCoordinate (int vterm_max, int region_max, int win_min, int win_max) const noexcept -> int
-{
-  return std::min({vterm_max, region_max, win_max}) - win_min;
-}
-
-//----------------------------------------------------------------------
-void FVTerm::updateVTerm() const
-{
-  // Updates the character data from all regions to VTerm
-
-  static const auto& init_object = getGlobalFVTermInstance();
-
-  if ( init_object->active_changes_count == 0 )
-    return;
-
-  updateVTermDesktop();
-
-  if ( ! vterm_window_list || vterm_window_list->empty() )
-    return;
-
-  for (const auto& vterm_obj : *vterm_window_list)  // List from bottom to top
-  {
-    auto v_win = vterm_obj->getVWin();
-
-    if ( ! (v_win && v_win->visible && v_win->layer > 0) )
-      continue;
-
-    updateVTermWindow(v_win);
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::updateVTermDesktop() const
-{
-  if ( ! hasPendingUpdates(vdesktop.get()) )
-    return;
-
-  addLayer(vdesktop.get());  // Add vdesktop changes to vterm
-  setDirty(vdesktop.get(), false);
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::updateVTermWindow (FTermRegion* v_win) const
-{
-  if ( hasPendingUpdates(v_win) )
-  {
-    passChangesToOverlap(v_win);
-    addLayer(v_win);  // Add v_win changes to vterm
-    setDirty(v_win, false);
-  }
-  else if ( hasChildRegionChanges(v_win) )
-  {
-    passChangesToOverlap(v_win);
-    addLayer(v_win);  // and call the child region processing handler there
-    clearChildRegionChanges(v_win);
-  }
-}
-//----------------------------------------------------------------------
-inline auto FVTerm::computeLayerGeometry (const FTermRegion* region) const noexcept -> LayerGeometry
-{
-  // Compute the geometry values used throughout the rendering process
-
-  const auto region_x = region->position.x;
-  const auto region_y = region->position.y;
-  const auto vterm_width = vterm->size.width;
-  const auto vterm_height = vterm->size.height;
-  const auto height = region->minimized ? region->min_size.height : getFullRegionHeight(region);
-
-  return LayerGeometry
-  {
-    region_x,
-    region_y,
-    std::max(0, -region_x),
-    vterm_width,
-    vterm_height,
-    std::max(region_x, 0),
-    getFullRegionWidth(region),
-    height,
-    vterm_width - region_x - 1,
-    // Calculate actual rendering range (clipped to vterm)
-    std::max(0, -region_y),
-    std::min(vterm_height - region_y, height)
-  };
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::isLayerOutsideVTerm (const LayerGeometry& geo) const noexcept -> bool
-{
-  if ( geo.region_y >= geo.vterm_height )
-    return false;
-
-  if ( geo.ax >= geo.vterm_width )
-    return false;
-
-  if ( geo.region_y + geo.height <= 0 )
-    return false;
-
-  return true;
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::buildLineChangeBatch ( const FTermRegion* region
-                                         , const LayerGeometry& geo
-                                         , FLineChangesBatch& batch) const noexcept
-{
-  int prev_xmin{-1};
-  int prev_xmax{-1};
-  NoTrans prev_has_no_trans{NoTrans::Undefined};
-
-  auto line_changes = region->changes_in_line.begin() + geo.y_start;
-
-  for (auto y{geo.y_start}; y < geo.y_end; y++)  // Line loop
-  {
-    const auto line_xmin_raw = int(line_changes->xmin);
-    const auto line_xmax_raw = int(line_changes->xmax);
-
-    if ( line_xmin_raw > line_xmax_raw )
-    {
-      ++line_changes;
-      prev_xmin = -1;
-      prev_xmax = -1;
-      prev_has_no_trans = NoTrans::Undefined;
-      continue;
-    }
-
-    const auto line_xmin = std::max(line_xmin_raw, geo.ol);
-    const auto line_xmax = std::min(line_xmax_raw, geo.xmax_inside_vterm);
-
-    if ( line_xmin > line_xmax )
-    {
-      ++line_changes;
-      prev_xmin = -1;
-      prev_xmax = -1;
-      prev_has_no_trans = NoTrans::Undefined;
-      continue;
-    }
-
-    const NoTrans has_no_trans = line_changes->trans_count == 0 ? NoTrans::Set : NoTrans::Unset;
-    ++line_changes;
-
-    if ( prev_xmin == line_xmin
-      && prev_xmax == line_xmax
-      && prev_has_no_trans == has_no_trans )
-    {
-      batch.back().count++;
-      continue;
-    }
-
-    batch.push_back({1, y, line_xmin, line_xmax, has_no_trans});
-    prev_xmin = line_xmin;
-    prev_xmax = line_xmax;
-    prev_has_no_trans = has_no_trans;
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::applyLineBatch ( FTermRegion* region
-                                   , const LayerGeometry& geo
-                                   , const FLineChangesBatch& batch ) const noexcept
-{
-  for (const auto& line : batch)
-  {
-    const auto line_xmin = line.xmin;
-    const auto line_xmax = line.xmax;
-    const auto has_no_trans = line.has_no_transparency == NoTrans::Set;
-    const auto tx = geo.region_x + line_xmin;  // Global terminal x-position
-    const int length = line_xmax - line_xmin + 1;
-
-    // Process all lines in batch with same operation
-    for (int i = 0; i < line.count; ++i)
-    {
-      const auto y = line.ypos + i;
-      auto line_changes = region->changes_in_line.begin() + y;
-      const auto ty = geo.region_y + y;  // Global terminal y-position
-      const auto region_line_offset = y * geo.width + line_xmin;
-      const auto vterm_line_offset = ty * geo.vterm_width + tx;
-      auto rc = region->data.begin() + region_line_offset;    // Region character
-      auto tc = vterm->data.begin() + vterm_line_offset;  // Terminal character
-
-      if ( has_no_trans )
-      {
-        // Line has only covered characters
-        putRegionLine (*rc, *tc, length);
-      }
-      else
-      {
-        // Line with hidden and transparent characters
-        addRegionLineWithTransparency (rc, tc, length);
-      }
-
-      auto vterm_changes = vterm->changes_in_line.begin() + ty;
-      const auto tx_start = uInt(tx);
-      const auto tx_end   = uInt(std::min( geo.ax + line_xmax
-                                         , geo.vterm_width - 1 ));
-      vterm_changes->xmin = std::min(vterm_changes->xmin, tx_start);
-      vterm_changes->xmax = std::max(vterm_changes->xmax, tx_end);
-
-      line_changes->xmin = uInt(geo.width);
-      line_changes->xmax = 0;
-      ++line_changes;
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::updateVTermChangesFromBatch ( const LayerGeometry& geo
-                                                , FLineChangesBatch& batch ) const noexcept
-{
-  const auto& first = batch.front();
-  const auto& last  = batch.back();
-  const auto begin = uInt(geo.region_y + first.ypos - geo.y_start);
-  const auto end = uInt(geo.region_y + last.ypos + last.count - 1 - geo.y_start);
-
-  auto& changes_in_row = vterm->changes_in_row;
-  changes_in_row.ymin = std::min(changes_in_row.ymin, begin);
-  changes_in_row.ymax = std::max(changes_in_row.ymax, end);
-  setDirty(vterm.get());
-}
-
-//----------------------------------------------------------------------
 inline void FVTerm::scrollTerminalForward() const
 {
   // Scrolls the terminal up one line
@@ -1747,63 +1808,6 @@ inline void FVTerm::scrollTerminalReverse() const
 }
 
 //----------------------------------------------------------------------
-void FVTerm::callPreprocessingHandler (const FTermRegion* region) const
-{
-  // Call preprocessing handler
-
-  if ( ! region || region->preproc_list.empty() )
-    return;
-
-  for (const auto& pcall : region->preproc_list)
-  {
-    // call the preprocessing handler
-    const auto& preprocessingHandler = pcall->function;
-    preprocessingHandler();
-  }
-}
-
-//----------------------------------------------------------------------
-auto FVTerm::hasChildRegionChanges (const FTermRegion* region) const -> bool
-{
-  if ( ! region || region->preproc_list.empty() )
-    return false;
-
-  return std::any_of ( region->preproc_list.cbegin()
-                     , region->preproc_list.cend()
-                     , [] (const auto& pcall) noexcept
-                       {
-                         return pcall->instance
-                             && pcall->instance->child_print_region
-                             && pcall->instance->child_print_region->has_changes;
-                       }
-                     );
-}
-
-//----------------------------------------------------------------------
-void FVTerm::clearChildRegionChanges (const FTermRegion* region) const
-{
-  if ( ! region || region->preproc_list.empty() )
-    return;
-
-  for (const auto& pcall : region->preproc_list)
-  {
-    if ( pcall->instance && pcall->instance->child_print_region )
-      setDirty(pcall->instance->child_print_region, false);
-  }
-}
-
-//----------------------------------------------------------------------
-constexpr auto FVTerm::isInsideRegion (const FPoint& pos, const FTermRegion* region) noexcept -> bool
-{
-  // Check whether the coordinates are within the region
-
-  const int x = pos.getX();
-  const int y = pos.getY();
-  return x >= 0 && x < region->size.width
-      && y >= 0 && y < region->size.height;
-}
-
-//----------------------------------------------------------------------
 inline auto FVTerm::isInsideTerminal (const FPoint& pos) const noexcept -> bool
 {
   // Check whether the coordinates are within the virtual terminal
@@ -1812,20 +1816,6 @@ inline auto FVTerm::isInsideTerminal (const FPoint& pos) const noexcept -> bool
   const auto y = pos.getY();
   return x >= 0 && x < int(foutput->getColumnNumber())
       && y >= 0 && y < int(foutput->getLineNumber());
-}
-
-//----------------------------------------------------------------------
-constexpr auto FVTerm::isFCharTransparent (const FChar& fchar) noexcept -> bool
-{
-  return fchar.isBitSet(internal::var::transparent_mask);
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::isTransparentInvisible (const FChar& fchar) const noexcept -> bool
-{
-  static const auto& trans_inv_chars = getTransparentInvisibleLookupMap();
-  const auto& fist_char = fchar.ch.unicode_data[0];
-  return trans_inv_chars.find(fist_char) != trans_inv_chars.end();
 }
 
 //----------------------------------------------------------------------
@@ -1899,54 +1889,455 @@ inline void FVTerm::saveCurrentVTerm (uInt first_row, uInt last_row) const noexc
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::putRegionLine ( const FChar& src_char
-                                  , FChar& dst_char
-                                  , const int length ) const noexcept
+auto FVTerm::canUpdateTerminalNow() const -> bool
 {
-  // copy "length" characters from region to terminal
+  // Check if terminal updates were stopped, application is stopping,
+  // VTerm has no changes, or the drawing is not completed
 
-  std::memcpy (&dst_char, &src_char, std::size_t(length) * sizeof(dst_char));
+  return  ! FVTerm::areTerminalUpdatesPaused()
+       && ! FApplication::isQuit()
+       && ( foutput->isFlushTimeout() || FVTerm::isTerminalUpdateForced() )
+       && FVTerm::hasPendingTerminalUpdates()
+       && FVTerm::isDrawingFinished();
+}
+
+
+//----------------------------------------------------------------------
+// class FVTermCompositor
+//----------------------------------------------------------------------
+
+auto FVTermCompositor::isCovered ( const FPoint& pos
+                                 , const FTermRegion* region ) const noexcept -> CoveredState
+{
+  // Determines the covered state for the given position
+
+  const auto* vterm_win_list{FVTerm::getWindowList ()};
+
+  if ( ! region || ! vterm_win_list || vterm_win_list->empty()
+    || vterm_win_list->back()->getVWin() == region )  // Top window can't be covered
+    return CoveredState::None;
+
+  const auto pos_x = pos.getX();
+  const auto pos_y = pos.getY();
+
+  auto is_covered{CoveredState::None};  // Initial state: no coverage
+  bool found{ region == owner.vdesktop.get() };
+
+  for (const auto& vterm_obj : *vterm_win_list)  // Iteration through window list
+  {
+    const auto* win = vterm_obj->getVWin();
+
+    if ( ! win || ! win->visible )
+      continue;
+
+    if ( ! found )  // Check if we've found the target region yet
+    {
+      found = ( region == win );
+      continue;
+    }
+
+    const int win_x_min = win->position.x;
+    const int win_y_min = win->position.y;
+
+    if ( pos_x < win_x_min || pos_y < win_y_min )
+      continue;
+
+    const int current_height = win->minimized ? win->min_size.height
+                                              : getFullRegionHeight(win);
+    const int win_x_max = win_x_min + getFullRegionWidth(win);
+    const int win_y_max = win_y_min + current_height;
+
+    if ( pos_x >= win_x_max || pos_y >= win_y_max )
+      continue;
+
+    // Position is covered by this window - check for transparency
+    const auto delta_x = pos_x - win->position.x;
+    const auto delta_y = pos_y - win->position.y;
+    const auto width = getFullRegionWidth(win);
+    const auto index = unsigned(delta_y) * unsigned(width) + unsigned(delta_x);
+    const auto& character = win->data[index];
+
+    if ( character.isBitSet(FAttribute::set::transparent) )
+      continue;
+
+    if ( character.isBitSet(FAttribute::set::color_overlay) )  // Color overlay = half covered
+      is_covered = CoveredState::Half;  // Mark as partially covered
+    else
+      return CoveredState::Full;  // Fully covered
+  }
+
+  return is_covered;
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::applyColorOverlay (const FChar& src_char, FChar& dst_char) const
+void FVTermCompositor::passChangesToOverlap (const FTermRegion* region) const
 {
-  dst_char.ch = src_char.ch;  // Get covered character
-  dst_char.unsetBit(internal::var::color_overlay_reset_mask);
+  const auto* vterm_win_list = FVTerm::getWindowList ();
 
-  if ( isTransparentInvisible(dst_char) )
-    dst_char.ch[0] = L' ';
+  if ( ! region || ! vterm_win_list || vterm_win_list->empty() )
+    return;
+
+  processOverlappingWindows (region, *vterm_win_list);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::inheritBackground (const FChar& src_char, FChar& dst_char) const
+inline void FVTermCompositor::processOverlappingWindows ( const FTermRegion* region
+                                                        , const FVTermList& vterm_win_list ) const
 {
-  // Add the covered background to this character
-  copyBgColor(src_char.color, dst_char.color);
+  bool found{false};
+
+  if ( ! region )
+    return;
+
+  for (const auto& vterm_obj : vterm_win_list)
+  {
+    auto* win = vterm_obj->getVWin();
+
+    if ( found && win && win->visible && win->isOverlapped(region) )
+    {
+      // Pass changes to the found window
+      passChangesToOverlappingWindow (win, region);
+    }
+
+    if ( region == win )
+      found = true;
+  }
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::putMultiLayerRegionLine ( FChar_iterator dst_char
-                                            , const int length
-                                            , const FPoint& pos ) const noexcept
+inline void FVTermCompositor::passChangesToOverlappingWindow ( FTermRegion* win
+                                                             , const FTermRegion* region ) const noexcept
+{
+  FVTerm::setDirty (win);
+
+  // Boundaries
+  const int win_y_min = win->position.y;
+  const int win_height = win->minimized ? win->min_size.height : getFullRegionHeight(win);
+  const int win_y_max = win_y_min + win_height - 1;
+  const int region_y_min = region->position.y;
+  const int region_height = region->minimized ? region->min_size.height : getFullRegionHeight(region);
+  const int region_y_max = region_y_min + region_height - 1;
+  const int vterm_y_max = owner.vterm->size.height - 1;
+
+  // Calculate start and end line
+  const int y_start = calculateStartCoordinate (region_y_min, win_y_min);
+  const int y_end = calculateEndCoordinate (vterm_y_max, region_y_max, win_y_min, win_y_max);
+
+  for (auto y{y_start}; y <= y_end; y++)  // Line loop
+  {
+    passChangesToOverlappingWindowLine (win, y, region);
+  }
+
+  win->changes_in_row = {uInt(y_start), uInt(y_end)};
+}
+
+//----------------------------------------------------------------------
+inline void FVTermCompositor::passChangesToOverlappingWindowLine ( FTermRegion* win
+                                                                 , int y
+                                                                 , const FTermRegion* region ) const noexcept
+{
+  // Boundaries
+  const int win_x_min = win->position.x;
+  const int win_x_max = win_x_min + getFullRegionWidth(win) - 1;
+  const int region_x_min = region->position.x;
+  const int region_x_max = region_x_min + getFullRegionWidth(region) - 1;
+  const int vterm_x_max = owner.vterm->size.width - 1;
+
+  // Calculate start and end position
+  const int x_start = calculateStartCoordinate (region_x_min, win_x_min);
+  const int x_end = calculateEndCoordinate (vterm_x_max, region_x_max, win_x_min, win_x_max);
+
+  // Sets the new change boundaries
+  auto& line_changes = win->changes_in_line[unsigned(y)];
+  line_changes.xmin = uInt(std::min(int(line_changes.xmin), x_start));
+  line_changes.xmax = uInt(std::max(int(line_changes.xmax), x_end));
+}
+
+//----------------------------------------------------------------------
+void FVTermCompositor::updateVTerm() const
+{
+  // Updates the character data from all regions to VTerm
+
+  static const auto& init_object = FVTerm::getGlobalFVTermInstance ();
+
+  if ( init_object->active_changes_count == 0 )
+    return;
+
+  updateVTermDesktop();
+
+  if ( ! owner.vterm_window_list || owner.vterm_window_list->empty() )
+    return;
+
+  for (const auto& vterm_obj : *owner.vterm_window_list)  // List from bottom to top
+  {
+    auto v_win = vterm_obj->getVWin();
+
+    if ( ! (v_win && v_win->visible && v_win->layer > 0) )
+      continue;
+
+    updateVTermWindow(v_win);
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTermCompositor::updateVTermDesktop() const
+{
+  if ( ! hasPendingUpdates(owner.vdesktop.get()) )
+    return;
+
+  addLayer(owner.vdesktop.get());  // Add vdesktop changes to vterm
+  FVTerm::setDirty (owner.vdesktop.get(), false);
+}
+
+//----------------------------------------------------------------------
+inline void FVTermCompositor::updateVTermWindow (FTermRegion* v_win) const
+{
+  if ( hasPendingUpdates(v_win) )
+  {
+    passChangesToOverlap(v_win);
+    addLayer(v_win);  // Add v_win changes to vterm
+    FVTerm::setDirty (v_win, false);
+  }
+  else if ( hasChildRegionChanges(v_win) )
+  {
+    passChangesToOverlap(v_win);
+    addLayer(v_win);  // and call the child region processing handler there
+    clearChildRegionChanges(v_win);
+  }
+}
+
+//----------------------------------------------------------------------
+inline auto FVTermCompositor::computeLayerGeometry (const FTermRegion* region) const noexcept -> LayerGeometry
+{
+  // Compute the geometry values used throughout the rendering process
+
+  const auto region_x = region->position.x;
+  const auto region_y = region->position.y;
+  const auto vterm_width = owner.vterm->size.width;
+  const auto vterm_height = owner.vterm->size.height;
+  const auto height = region->minimized ? region->min_size.height : getFullRegionHeight(region);
+
+  return LayerGeometry
+  {
+    region_x,
+    region_y,
+    std::max(0, -region_x),
+    vterm_width,
+    vterm_height,
+    std::max(region_x, 0),
+    getFullRegionWidth(region),
+    height,
+    vterm_width - region_x - 1,
+    // Calculate actual rendering range (clipped to vterm)
+    std::max(0, -region_y),
+    std::min(vterm_height - region_y, height)
+  };
+}
+
+//----------------------------------------------------------------------
+inline auto FVTermCompositor::isLayerOutsideVTerm (const LayerGeometry& geo) const noexcept -> bool
+{
+  if ( geo.region_y >= geo.vterm_height )
+    return false;
+
+  if ( geo.ax >= geo.vterm_width )
+    return false;
+
+  if ( geo.region_y + geo.height <= 0 )
+    return false;
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+inline void FVTermCompositor::buildLineChangeBatch ( const FTermRegion* region
+                                                   , const LayerGeometry& geo
+                                                   , FLineChangesBatch& batch ) const noexcept
+{
+  int prev_xmin{-1};
+  int prev_xmax{-1};
+  NoTrans prev_has_no_trans{NoTrans::Undefined};
+
+  auto line_changes = region->changes_in_line.begin() + geo.y_start;
+
+  for (auto y{geo.y_start}; y < geo.y_end; y++)  // Line loop
+  {
+    const auto line_xmin_raw = int(line_changes->xmin);
+    const auto line_xmax_raw = int(line_changes->xmax);
+
+    if ( line_xmin_raw > line_xmax_raw )
+    {
+      ++line_changes;
+      prev_xmin = -1;
+      prev_xmax = -1;
+      prev_has_no_trans = NoTrans::Undefined;
+      continue;
+    }
+
+    const auto line_xmin = std::max(line_xmin_raw, geo.ol);
+    const auto line_xmax = std::min(line_xmax_raw, geo.xmax_inside_vterm);
+
+    if ( line_xmin > line_xmax )
+    {
+      ++line_changes;
+      prev_xmin = -1;
+      prev_xmax = -1;
+      prev_has_no_trans = NoTrans::Undefined;
+      continue;
+    }
+
+    const auto has_no_trans = line_changes->trans_count == 0
+                            ? NoTrans::Set
+                            : NoTrans::Unset;
+    ++line_changes;
+
+    if ( prev_xmin == line_xmin
+      && prev_xmax == line_xmax
+      && prev_has_no_trans == has_no_trans )
+    {
+      batch.back().count++;
+      continue;
+    }
+
+    batch.push_back({1, y, line_xmin, line_xmax, has_no_trans});
+    prev_xmin = line_xmin;
+    prev_xmax = line_xmax;
+    prev_has_no_trans = has_no_trans;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTermCompositor::applyLineBatch ( FTermRegion* region
+                                             , const LayerGeometry& geo
+                                             , const FLineChangesBatch& batch ) const noexcept
+{
+  for (const auto& line : batch)
+  {
+    const auto line_xmin = line.xmin;
+    const auto line_xmax = line.xmax;
+    const auto has_no_trans = line.has_no_transparency == NoTrans::Set;
+    const auto tx = geo.region_x + line_xmin;  // Global terminal x-position
+    const int length = line_xmax - line_xmin + 1;
+
+    // Process all lines in batch with same operation
+    for (int i = 0; i < line.count; ++i)
+    {
+      const auto y = line.ypos + i;
+      auto line_changes = region->changes_in_line.begin() + y;
+      const auto ty = geo.region_y + y;  // Global terminal y-position
+      const auto region_line_offset = y * geo.width + line_xmin;
+      const auto vterm_line_offset = ty * geo.vterm_width + tx;
+      auto rc = region->data.begin() + region_line_offset;      // Region character
+      auto tc = owner.vterm->data.begin() + vterm_line_offset;  // Terminal character
+
+      if ( has_no_trans )
+      {
+        // Line has only covered characters
+        putRegionLine (*rc, *tc, length);
+      }
+      else
+      {
+        // Line with hidden and transparent characters
+        addRegionLineWithTransparency (rc, tc, length);
+      }
+
+      auto vterm_changes = owner.vterm->changes_in_line.begin() + ty;
+      const auto tx_start = uInt(tx);
+      const auto tx_end   = uInt(std::min( geo.ax + line_xmax
+                                         , geo.vterm_width - 1 ));
+      vterm_changes->xmin = std::min(vterm_changes->xmin, tx_start);
+      vterm_changes->xmax = std::max(vterm_changes->xmax, tx_end);
+
+      line_changes->xmin = uInt(geo.width);
+      line_changes->xmax = 0;
+      ++line_changes;
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTermCompositor::updateVTermChangesFromBatch ( const LayerGeometry& geo
+                                                          , FLineChangesBatch& batch ) const noexcept
+{
+  const auto& first = batch.front();
+  const auto& last  = batch.back();
+  const auto begin = uInt(geo.region_y + first.ypos - geo.y_start);
+  const auto end = uInt(geo.region_y + last.ypos + last.count - 1 - geo.y_start);
+
+  auto& changes_in_row = owner.vterm->changes_in_row;
+  changes_in_row.ymin = std::min(changes_in_row.ymin, begin);
+  changes_in_row.ymax = std::max(changes_in_row.ymax, end);
+  FVTerm::setDirty (owner.vterm.get());
+}
+
+//----------------------------------------------------------------------
+void FVTermCompositor::callPreprocessingHandler (const FTermRegion* region) const
+{
+  // Call preprocessing handler
+
+  if ( ! region || region->preproc_list.empty() )
+    return;
+
+  for (const auto& pcall : region->preproc_list)
+  {
+    // call the preprocessing handler
+    const auto& preprocessingHandler = pcall->function;
+    preprocessingHandler();
+  }
+}
+
+//----------------------------------------------------------------------
+auto FVTermCompositor::hasChildRegionChanges (const FTermRegion* region) const -> bool
+{
+  if ( ! region || region->preproc_list.empty() )
+    return false;
+
+  return std::any_of ( region->preproc_list.cbegin()
+                     , region->preproc_list.cend()
+                     , [] (const auto& pcall) noexcept
+                       {
+                         return pcall->instance
+                             && pcall->instance->child_print_region
+                             && pcall->instance->child_print_region->has_changes;
+                       }
+                     );
+}
+
+//----------------------------------------------------------------------
+void FVTermCompositor::clearChildRegionChanges (const FTermRegion* region) const
+{
+  if ( ! region || region->preproc_list.empty() )
+    return;
+
+  for (const auto& pcall : region->preproc_list)
+  {
+    if ( pcall->instance && pcall->instance->child_print_region )
+      FVTerm::setDirty (pcall->instance->child_print_region, false);
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTermCompositor::putMultiLayerRegionLine ( FChar_iterator dst_char
+                                                      , const int length
+                                                      , const FPoint& pos ) const noexcept
 {
   // This function requires buffer_mutex. The caller must lock it
 
   if ( length == 0 )
     return;
 
-  if ( overlay_search_buffer.size() < std::size_t(length) )  // Resize only if needed
-    overlay_search_buffer.resize(std::size_t(length));
+  if ( owner.overlay_search_buffer.size() < std::size_t(length) )  // Resize only if needed
+    owner.overlay_search_buffer.resize(std::size_t(length));
 
-  auto search_buffer = overlay_search_buffer.begin();
+  auto search_buffer = owner.overlay_search_buffer.begin();
   std::fill_n(search_buffer, length, SearchState::start);
 
   const auto term_x = pos.getX();
   const auto term_y = pos.getY();
 
-  overlay_line_buffer.clear();  // Clear buffer
+  owner.overlay_line_buffer.clear();  // Clear buffer
 
-  for (const auto* win : covered_regions_buffer)
+  for (const auto* win : owner.covered_regions_buffer)
   {
     // Precalculate window boundaries
     const int current_height = win->minimized ? win->min_size.height
@@ -1974,13 +2365,13 @@ inline void FVTerm::putMultiLayerRegionLine ( FChar_iterator dst_char
     const auto end_idx = std::min(length, x_max - term_x);
 
     // Store pre-calculated region line data
-    overlay_line_buffer.push_back
+    owner.overlay_line_buffer.push_back
     (
       { win->data.begin(), index, start_idx, end_idx }
     );
   }
 
-  for (const auto& line : overlay_line_buffer)
+  for (const auto& line : owner.overlay_line_buffer)
   {
     auto offset = line.start_idx + line.offset;
     auto win_char = line.iter + offset;
@@ -1997,9 +2388,9 @@ inline void FVTerm::putMultiLayerRegionLine ( FChar_iterator dst_char
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::processCharState ( SearchState& char_search
-                                     , const FChar& win_char
-                                     , FChar& dst) const noexcept
+inline void FVTermCompositor::processCharState ( SearchState& char_search
+                                               , const FChar& win_char
+                                               , FChar& dst) const noexcept
 {
   if ( char_search == SearchState::ready )
     return;
@@ -2065,8 +2456,8 @@ inline void FVTerm::processCharState ( SearchState& char_search
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::putRegionLineWithTransparency ( RegionRenderContext& ctx
-                                                  , const int length ) const
+inline void FVTermCompositor::putRegionLineWithTransparency ( RegionRenderContext& ctx
+                                                            , const int length ) const
 {
   // This function requires buffer_mutex. The caller must lock it
 
@@ -2141,9 +2532,9 @@ inline void FVTerm::putRegionLineWithTransparency ( RegionRenderContext& ctx
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::processAndFlushRegion( RegionRenderContext& ctx,
-                                           bool next_char_transparent,
-                                           FChar_const_iterator current_char ) const
+inline void FVTermCompositor::processAndFlushRegion ( RegionRenderContext& ctx
+                                                    , bool next_char_transparent
+                                                    , FChar_const_iterator current_char ) const
 {
   // Process completed region
   if ( ctx.is_region_transparent || ctx.line_covered )
@@ -2165,298 +2556,169 @@ inline void FVTerm::processAndFlushRegion( RegionRenderContext& ctx,
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::addRegionLineWithTransparency ( FChar_const_iterator src_char
-                                                  , FChar_iterator dst_char
-                                                  , const int length ) const
+inline void FVTermCompositor::addVDesktopToListIfExists (FTermRegionList& list) const
 {
-  if ( length == 0 )
-    return;
+  // Adds the virtual desktop region, if it exists
 
-  const auto handle_region = \
-      [this, &dst_char] ( bool transparent
-                        , int count
-                        , FChar_const_iterator start )
-  {
-    if ( transparent )
-      addTransparent (start, dst_char, count);
-    else
-      putNonTransparent (start, dst_char, count);
-  };
-
-  const auto end_char = src_char + length;
-  auto region_start = src_char;
-  int region_count{1};
-  bool is_region_transparent{isFCharTransparent(*src_char)};
-
-  for (auto current_char = src_char + 1; current_char < end_char; ++current_char)
-  {
-    const bool is_current_char_transparent = isFCharTransparent(*current_char);
-
-    if ( is_current_char_transparent == is_region_transparent )
-      ++region_count;
-    else
-    {
-      handle_region (is_region_transparent, region_count, region_start);
-      // Reset for the next region
-      is_region_transparent = is_current_char_transparent;
-      region_start = current_char;
-      region_count = 1;
-    }
-  }
-
-  // Handle the final region
-  handle_region (is_region_transparent, region_count, region_start);
+  if ( owner.vdesktop )
+    list.push_back(owner.vdesktop.get());
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::addTransparentRegionLine ( const FChar_const_iterator& src_char
-                                             , const FChar_iterator& dst_char
-                                             , const int length ) const
+inline void FVTermCompositor::determineCoveredRegions (FTermRegion* src) const
 {
-  auto src = src_char;
-  auto dst = dst_char;
-  auto end = src + length;
+  // This function requires buffer_mutex. The caller must lock it
 
-  while ( src < end )  // column loop
+  const auto* vterm_win_list = FVTerm::getWindowList ();
+  owner.covered_regions_buffer.clear();
+  resetLineCoveredState(src);
+
+  if ( ! vterm_win_list || vterm_win_list->empty() )
   {
-    addTransparentRegionChar (*src, *dst);
-    ++src;  // src character
-    ++dst;  // dst character
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::addTransparentRegionChar (const FChar& src_char, FChar& dst_char) const
-{
-  if ( src_char.isBitSet(FAttribute::set::transparent) )  // Transparent
-    return;  // Leave character on vterm untouched
-
-  if ( src_char.isBitSet(FAttribute::set::color_overlay) )  // Color overlay
-  {
-    // Get covered character + add the current color
-    dst_char.color.data = src_char.color.data;
-    dst_char.attr.data = src_char.attr.data & internal::var::color_overlay_reset_mask;
-
-    if ( isTransparentInvisible(dst_char) )
-      dst_char.ch[0] = L' ';
-
+    addVDesktopToListIfExists(owner.covered_regions_buffer);
     return;
   }
 
-  if ( src_char.isBitSet(FAttribute::set::inherit_background) )
+  const auto end = vterm_win_list->crend();
+  const auto src_layer = src->layer;
+
+  // Regions from top to bottom
+  for (auto iter = vterm_win_list->crbegin(); iter < end; ++iter)
   {
-    // Add the covered background to this character
-    auto bg_color = dst_char.color.getBgColor();
-    dst_char = src_char;
-    dst_char.color.setBgColor(bg_color);
-    dst_char.unsetBit(internal::var::print_reset_mask);
-    return;
-  }
+    const auto& vterm_obj = *iter;
 
-  // Default
-  dst_char = src_char;
-}
-
-//----------------------------------------------------------------------
-auto FVTerm::clearFullRegion (FTermRegion* region, FChar& fillchar) const -> bool
-{
-  // Clear region
-  std::fill (region->data.begin(), region->data.end(), fillchar);
-
-  if ( region != vdesktop.get() )  // Is the region identical to the desktop?
-    return false;
-
-  // Try to clear the terminal rapidly with a control sequence
-  if ( foutput->clearTerminal (fillchar.ch[0]) )
-  {
-    fillchar.setBit(FAttribute::set::printed);
-    std::fill (vterm->data.begin(), vterm->data.end(), fillchar);
-    // Save the first and last rows before the output resets them
-    const auto first_row = vterm->changes_in_row.ymin;
-    const auto last_row  = vterm->changes_in_row.ymax;
-    saveCurrentVTerm(first_row, last_row);
-  }
-  else
-  {
-    auto vdesktop_changes = vdesktop->changes_in_line.begin();
-    const auto vdesktop_changes_end = vdesktop_changes
-                                    + vdesktop->size.height;
-
-    while ( vdesktop_changes < vdesktop_changes_end )
-    {
-      vdesktop_changes->xmin = 0;
-      vdesktop_changes->xmax = uInt(vdesktop->size.width) - 1;
-      vdesktop_changes->trans_count = 0;
-      ++vdesktop_changes;
-    }
-
-    vdesktop->changes_in_row = {0, uInt(vdesktop->size.height - 1)};
-    setDirty(vdesktop.get());
-  }
-
-  return true;
-}
-
-//----------------------------------------------------------------------
-void FVTerm::clearRegionWithShadow (FTermRegion* region, const FChar& fillchar) const noexcept
-{
-  FChar t_char = fillchar;
-  t_char.ch[0] = L'\0';
-  t_char.setBit(FAttribute::set::transparent);
-  t_char.setCharWidth(0);
-  const auto total_width = getFullRegionWidth(region);
-  auto region_pos = region->data.begin();
-  auto shadow_begin = region->data.begin() + region->size.width;
-
-  for (auto y{0}; y < region->size.height; y++)
-  {
-    // Clear region
-    std::fill (region_pos, region_pos + region->size.width, fillchar);
-    // Make right shadow transparent
-    std::fill (shadow_begin, shadow_begin + region->shadow.width, t_char);
-    region_pos += total_width;
-    shadow_begin += total_width;
-  }
-
-  // Make bottom shadow transparent
-  region_pos = region->data.begin() + (total_width * region->size.height);
-
-  for (auto y{0}; y < region->shadow.height; y++)
-  {
-    std::fill (region_pos, region_pos + total_width, t_char);
-    region_pos += total_width;
-  }
-}
-
-//----------------------------------------------------------------------
-auto FVTerm::printPlain (FTermRegion* region, const FString& string) const noexcept -> int
-{
-  if ( ! region )
-    return -1;
-
-  const auto len = int(string.getLength());
-  const int region_width  = getFullRegionWidth(region);
-  const int region_height = getFullRegionHeight(region);
-  const int x = region->cursor.x;
-  const int y = region->cursor.y;
-  const int room = region_width - x + 1;  // Characters left in this row, including column x
-
-  if ( len <= 0 || x < 1 || y < 1 || y > region_height || len > room )
-    return -1;
-
-  static const auto& next_attribute = FVTermAttribute::getAttribute();
-  FChar fchar{};
-  fchar.color.data = next_attribute.color.data;
-  fchar.attr.data  = next_attribute.attr.data & internal::fvtermbuf_var::attr_mask;
-  fchar.setCharWidth(1);
-
-  const bool trans_new = fchar.isBitSet(internal::var::print_transparent_mask);
-  const auto ax = unsigned(x - 1);
-  const auto ay = unsigned(y - 1);
-  auto rc = region->getFCharIterator(x - 1, y - 1);
-  const auto src = string.cbegin();
-
-  uInt cmin{~0U};
-  uInt cmax{0};
-  uInt trans_added{0};
-  int  n{0};
-  bool ok{true};
-
-  while ( ok && n < len )
-  {
-    const auto c = src[n];
-
-    if ( c < 0x20 || c > 0x7e )  // Control, DEL or non-ASCII
-    {
-      ok = false;
+    if ( ! vterm_obj )
       continue;
-    }
 
-    fchar.ch.unicode_data[0] = c;
+    const auto* win = vterm_obj->getVWin();
 
-    if ( *rc == fchar )
-    {
-      if ( rc->getCharWidth() != 1 )
-      {
-        ok = false;
-        continue;
-      }
-
-      ++n;
-      ++rc;
+    if ( ! win || ! win->visible || win->layer < 1
+      || ! win->isOverlapped(src) )
       continue;
-    }
 
-    const bool trans_old = rc->isBitSet(internal::var::print_transparent_mask);
-    trans_added += uInt(int(trans_new) - int(trans_old));
-    *rc = fchar;
-    cmin = std::min(cmin, ax + uInt(n));
-    cmax = ax + uInt(n);  // Columns increase, so the last write is the max
-    ++n;
-    ++rc;
+    owner.covered_regions_buffer.push_back(win);
+
+    if ( win->layer <= src_layer )
+      continue;
+
+    determineLineCoveredState(win, src);
   }
 
-  if ( n > 0 )
-  {
-    setDirty(region);
-    auto& line = region->changes_in_line[ay];
-    line.trans_count += trans_added;
-
-    if ( cmin != ~0U )  // At least one character changed
-    {
-      line.xmin = std::min(line.xmin, cmin);
-      line.xmax = std::max(line.xmax, cmax);
-      region->changes_in_row.ymin = std::min(region->changes_in_row.ymin, ay);
-      region->changes_in_row.ymax = std::max(region->changes_in_row.ymax, ay);
-    }
-  }
-
-  if ( ! ok )
-    return -1;
-
-  if ( x + len > region_width )  // Line break at right margin
-  {
-    region->cursor.x = 1;
-    region->cursor.y = ( y >= region_height ) ? y : y + 1;  // Prevent up scrolling
-  }
-  else
-    region->cursor.x = x + len;
-
-  return len;  // Number of printed characters, or -1 if the caller must use the general path
+  addVDesktopToListIfExists(owner.covered_regions_buffer);
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::printWrap (FTermRegion* region, FChar_iterator& rc) const -> bool
+void FVTermCompositor::addLayer (FTermRegion* region) const noexcept
 {
-  bool end_of_region{false};
-  const int& width  = region->size.width;
-  const int& height = region->size.height;
-  const int& rsh    = region->shadow.width;
-  const int& bsh    = region->shadow.height;
+  // Transmit changes in region to the virtual terminal (add layer to vterm)
 
-  // Line break at right margin
-  if ( region->cursor.x > width + rsh )
-  {
-    region->cursor.x = 1;
-    region->cursor.y++;
-    rc = region->getFCharIterator(region->cursor.x - 1, region->cursor.y - 1);
-  }
+  if ( ! region || ! region->visible )
+    return;
 
-  // Prevent up scrolling
-  if ( region->cursor.y > height + bsh )
-  {
-    region->cursor.y--;
-    rc = region->getFCharIterator(region->cursor.x - 1, region->cursor.y - 1);
-    end_of_region = true;
-  }
+  // Compute geometry and decide early whether to render
+  LayerGeometry geometry = computeLayerGeometry(region);
 
-  return end_of_region;
+  // Early exit if region is completely outside vterm
+  if ( ! isLayerOutsideVTerm(geometry) )
+    return;
+
+  // Call the preprocessing handler methods (child region change handling)
+  callPreprocessingHandler(region);
+
+  // Create a stack by combining identical rows in sequence
+  std::lock_guard<std::mutex> line_changes_batch_lock(owner.line_changes_batch_mutex);
+  owner.line_changes_batch.clear();  // Clear buffer
+  buildLineChangeBatch(region, geometry, owner.line_changes_batch);
+
+  if ( owner.line_changes_batch.empty() )
+    return;
+
+  // Apply the batches to vterm data
+  applyLineBatch(region, geometry, owner.line_changes_batch);
+
+  // Update the range of changed rows and the cursor on vterm
+  updateVTermChangesFromBatch(geometry, owner.line_changes_batch);
+  owner.updateVTermCursor (region);
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::interpretControlCodes ( FTermRegion* region
-                                          , FChar_iterator& rc
-                                          , const FChar& term_char ) const noexcept -> bool
+void FVTermCompositor::copyRegion ( FTermRegion* dst, const FPoint& pos
+                                  , FTermRegion* src ) const noexcept
+{
+  // Copies the src region to the dst region position
+
+  if ( ! dst || ! src )
+    return;
+
+  const auto dst_is_vterm = bool( dst == owner.vterm.get() );
+  const int src_width = getFullRegionWidth(src);
+  const int dst_width = getFullRegionWidth(dst);
+  const int src_height = src->minimized
+                       ? src->min_size.height
+                       : getFullRegionHeight(src);
+  const int pos_x = pos.getX();
+  const int pos_y = pos.getY();
+  const int ax = std::max(1, pos_x) - 1;
+  const int ay = std::max(1, pos_y) - 1;
+  const int ol = std::max(0, 1 - pos_x);  // outside left
+  const int ot = std::max(0, 1 - pos_y);  // outside top
+  const int y_end = std::min(dst->size.height - ay, src_height - ot);
+  const int length = std::min(dst->size.width - ax, src_width - ol);
+
+  if ( length < 1 || y_end < 1 )
+    return;
+
+  auto src_changes = src->changes_in_line.cbegin();
+  auto dst_changes = dst->changes_in_line.begin() + ay;
+  auto sc = src->data.cbegin() + (src_width * ot) + ol;  // src character ptr
+  auto dc = dst->data.begin() + (dst_width * ay) + ax;  // dst character ptr
+
+  // Protect: covered_regions_buffer, overlay_search_buffer,
+  //          and overlay_line_buffer
+  std::lock_guard<std::mutex> buffers_lock(owner.buffer_mutex);
+
+  if ( dst_is_vterm )  // dst is the virtual terminal
+    determineCoveredRegions(src);
+
+  const auto x_max = uInt(ax + length - 1);
+  const auto y_max = uInt(ay + y_end - 1);
+
+  for (int y{0}; y < y_end; y++)  // line loop
+  {
+    if ( dst_is_vterm && src_changes->trans_count > 0 )
+    {
+      // Line with hidden and transparent characters
+      RegionRenderContext ctx{ sc, dc, 1, {ax, ay + y}, false
+                             , src_changes->covered };
+      putRegionLineWithTransparency(ctx, length);
+    }
+    else
+    {
+      // Line has only covered characters
+      putRegionLine (*sc, *dc, length);
+    }
+
+    dst_changes->xmin = std::min(dst_changes->xmin, uInt(ax));
+    dst_changes->xmax = std::max(dst_changes->xmax, x_max);
+    ++src_changes;
+    ++dst_changes;
+    sc += src_width;
+    dc += dst_width;
+  }
+
+  dst->changes_in_row.ymin = std::min(dst->changes_in_row.ymin, uInt(ay));
+  dst->changes_in_row.ymax = std::max(dst->changes_in_row.ymax, y_max);
+  FVTerm::setDirty (dst);
+}
+
+
+//----------------------------------------------------------------------
+// class FVTermPainter
+//----------------------------------------------------------------------
+
+inline auto FVTermPainter::interpretControlCodes ( FTermRegion* region
+                                                 , FChar_iterator& rc
+                                                 , const FChar& term_char ) const noexcept -> bool
 {
   switch ( term_char.ch.unicode_data[0] )
   {
@@ -2468,7 +2730,7 @@ inline auto FVTerm::interpretControlCodes ( FTermRegion* region
       break;
 
     case L'\t':
-      region->cursor.x += tabstop - ((region->cursor.x - 1) % tabstop);
+      region->cursor.x += FVTerm::tabstop - ((region->cursor.x - 1) % FVTerm::tabstop);
       break;
 
     case L'\b':
@@ -2476,7 +2738,7 @@ inline auto FVTerm::interpretControlCodes ( FTermRegion* region
       break;
 
     case L'\a':
-      foutput->beep();
+      owner.foutput->beep();
       break;
 
     default:
@@ -2488,85 +2750,9 @@ inline auto FVTerm::interpretControlCodes ( FTermRegion* region
 }
 
 //----------------------------------------------------------------------
-inline auto isComplexChar (const FChar& fchar) -> bool
-{
-  const auto ch0 = fchar.ch.unicode_data[0];
-  return fchar.getCharWidth() != 1
-      || fchar.isBitSet(FAttribute::set::fullwidth_padding)
-      || ch0 == L'\n' || ch0 == L'\r' || ch0 == L'\t'
-      || ch0 == L'\b' || ch0 == L'\a';
-}
-
-//----------------------------------------------------------------------
-#if defined(__GNUC__)
-__attribute__((noinline))
-#endif
-auto FVTerm::printRegionRange ( FTermRegion* region
-                              , FChar_iterator& rc
-                              , FVTermBuffer::const_iterator first
-                              , FVTermBuffer::const_iterator last ) const noexcept -> int
-{
-  const int region_width = getFullRegionWidth(region);
-  const int region_height = getFullRegionHeight(region);
-  const int x = region->cursor.x;
-  const int y = region->cursor.y;
-
-  // Fast path covers columns x .. region_width - 1; the last column (which wraps)
-  if ( x < 1 || y < 1 || x >= region_width || y > region_height )
-    return 0;
-
-  const auto max_n = std::min(region_width - x, int(last - first));
-  const auto ax = unsigned(x - 1);
-  const auto ay = unsigned(y - 1);
-  uInt cmin{~0U};  // first changed column
-  uInt cmax{0};    // last changed column
-  uInt trans_added{0};
-  int  n{0};
-
-  for (; n < max_n; ++n)
-  {
-    const FChar& ch = first[FVTermBuffer::difference_type(n)];
-
-    if ( isComplexChar(ch) || (*rc == ch && rc->getCharWidth() != 1) )
-      break;  // Let printComplexChar() handle it
-
-    if ( *rc != ch )
-    {
-      const bool trans_old = rc->isBitSet(internal::var::print_transparent_mask);
-      const bool trans_new = ch.isBitSet(internal::var::print_transparent_mask);
-      trans_added += uInt(int(trans_new) - int(trans_old));
-      *rc = ch;
-      cmin = std::min(cmin, ax + uInt(n));
-      cmax = ax + uInt(n);   // Columns increase, so the last write is the max
-    }
-
-    ++rc;
-  }
-
-  if ( n == 0 )
-    return 0;
-
-  region->cursor.x = x + n;
-  setDirty(region);
-
-  auto& line = region->changes_in_line[ay];
-  line.trans_count += trans_added;
-
-  if ( cmin != ~0U )  // At least one cell actually changed
-  {
-    line.xmin = std::min(line.xmin, cmin);
-    line.xmax = std::max(line.xmax, cmax);
-    region->changes_in_row.ymin = std::min(region->changes_in_row.ymin, ay);
-    region->changes_in_row.ymax = std::max(region->changes_in_row.ymax, ay);
-  }
-
-  return n;
-}
-
-//----------------------------------------------------------------------
-inline auto FVTerm::printComplexChar ( FTermRegion* region
-                                     , FChar_iterator& rc
-                                     , const FChar& term_char ) const noexcept -> int
+inline auto FVTermPainter::printComplexChar ( FTermRegion* region
+                                            , FChar_iterator& rc
+                                            , const FChar& term_char ) const noexcept -> int
 {
   if ( ! region )
     return -1;  // No region
@@ -2586,7 +2772,7 @@ inline auto FVTerm::printComplexChar ( FTermRegion* region
 
   region->cursor.x++;
   ++rc;
-  setDirty(region);
+  FVTerm::setDirty (region);
 
   // Line break at right margin
   if ( region->cursor.x > getFullRegionWidth(region) )
@@ -2608,46 +2794,8 @@ inline auto FVTerm::printComplexChar ( FTermRegion* region
 }
 
 //----------------------------------------------------------------------
-inline auto FVTerm::printCharacterOnCoordinate ( FTermRegion* region
-                                               , const FChar_iterator& rc
-                                               , const FChar& ch ) const noexcept -> std::size_t
-{
-  const auto ax = unsigned(region->cursor.x - 1);
-  const auto ay = unsigned(region->cursor.y - 1);
-
-  if ( *rc == ch )  // compare with an overloaded operator
-    return rc->getCharWidth();
-
-  const bool trans_old = rc->isBitSet(internal::var::print_transparent_mask);
-  const bool trans_new = ch.isBitSet(internal::var::print_transparent_mask);
-  const auto trans_changed = int(trans_new) - int(trans_old);
-
-  if ( trans_changed != 0 )
-    region->changes_in_line[ay].trans_count += uInt(trans_changed);
-
-  // copy character to region
-  *rc = ch;
-
-  auto current_width = uInt8(rc->getCharWidth());
-
-  if ( current_width == 0 )
-  {
-    const auto new_char_width = getColumnWidth(rc->ch[0]);
-
-    if ( new_char_width == 0 )
-      return 0;
-
-    addColumnWidth(*rc, new_char_width);  // Add column width
-    current_width = uInt8(new_char_width);
-  }
-
-  region->updateRegionChanges (ax, ay, current_width);
-  return current_width;
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::printPaddingCharacter ( FTermRegion* region
-                                          , const FChar& term_char ) const
+inline void FVTermPainter::printPaddingCharacter ( FTermRegion* region
+                                                 , const FChar& term_char ) const
 {
   // Creates a padding-character from the current character (term_char)
   // and prints it. It is a placeholder for the column after
@@ -2673,162 +2821,86 @@ inline void FVTerm::printPaddingCharacter ( FTermRegion* region
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::putNonTransparent ( FChar_const_iterator start_char
-                                      , FChar_iterator& dst_char
-                                      , int& non_trans_count ) const
+auto FVTermPainter::clearFullRegion ( FTermRegion* region
+                                    , FChar& fillchar ) const -> bool
 {
-  if ( non_trans_count == 0 )
-    return;
+  // Clear region
+  std::fill (region->data.begin(), region->data.end(), fillchar);
 
-  putRegionLine(*start_char, *dst_char, non_trans_count);
-  dst_char += non_trans_count;  // dst character
-  non_trans_count = 0;
-}
+  if ( region != owner.vdesktop.get() )  // Is the region identical to the desktop?
+    return false;
 
-//----------------------------------------------------------------------
-inline void FVTerm::addTransparent ( FChar_const_iterator start_char
-                                   , FChar_iterator& dst_char
-                                   , int& trans_count ) const
-{
-  if ( trans_count == 0 )
-    return;
-
-  addTransparentRegionLine (start_char, dst_char, trans_count);
-  dst_char += trans_count;  // dst character
-  trans_count = 0;
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::addVDesktopToListIfExists (FTermRegionList& list) const
-{
-  // Adds the virtual desktop region, if it exists
-
-  if ( vdesktop )
-    list.push_back(vdesktop.get());
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::determineCoveredRegions (FTermRegion* src) const
-{
-  // This function requires buffer_mutex. The caller must lock it
-
-  const auto* vterm_win_list = getWindowList();
-  covered_regions_buffer.clear();
-  resetLineCoveredState(src);
-
-  if ( ! vterm_win_list || vterm_win_list->empty() )
+  // Try to clear the terminal rapidly with a control sequence
+  if ( owner.foutput->clearTerminal (fillchar.ch[0]) )
   {
-    addVDesktopToListIfExists(covered_regions_buffer);
-    return;
+    fillchar.setBit(FAttribute::set::printed);
+    std::fill (owner.vterm->data.begin(), owner.vterm->data.end(), fillchar);
+    // Save the first and last rows before the output resets them
+    const auto first_row = owner.vterm->changes_in_row.ymin;
+    const auto last_row  = owner.vterm->changes_in_row.ymax;
+    owner.saveCurrentVTerm (first_row, last_row);
+  }
+  else
+  {
+    auto vdesktop_changes = owner.vdesktop->changes_in_line.begin();
+    const auto vdesktop_changes_end = vdesktop_changes
+                                    + owner.vdesktop->size.height;
+
+    while ( vdesktop_changes < vdesktop_changes_end )
+    {
+      vdesktop_changes->xmin = 0;
+      vdesktop_changes->xmax = uInt(owner.vdesktop->size.width) - 1;
+      vdesktop_changes->trans_count = 0;
+      ++vdesktop_changes;
+    }
+
+    owner.vdesktop->changes_in_row = {0, uInt(owner.vdesktop->size.height - 1)};
+    FVTerm::setDirty (owner.vdesktop.get());
   }
 
-  const auto end = vterm_win_list->crend();
-  const auto src_layer = src->layer;
-
-  // Regions from top to bottom
-  for (auto iter = vterm_win_list->crbegin(); iter < end; ++iter)
-  {
-    const auto& vterm_obj = *iter;
-
-    if ( ! vterm_obj )
-      continue;
-
-    const auto* win = vterm_obj->getVWin();
-
-    if ( ! win || ! win->visible || win->layer < 1
-      || ! win->isOverlapped(src) )
-      continue;
-
-    covered_regions_buffer.push_back(win);
-
-    if ( win->layer <= src_layer )
-      continue;
-
-    determineLineCoveredState(win, src);
-  }
-
-  addVDesktopToListIfExists(covered_regions_buffer);
+  return true;
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::resetLineCoveredState (FTermRegion* src) const
+auto FVTermPainter::print ( FTermRegion* region
+                          , const FVTermBuffer& buffer ) const noexcept -> int
 {
-  auto changes = src->changes_in_line.begin();
-  const auto changes_end = src->changes_in_line.end();
+  if ( ! region || buffer.isEmpty() )
+    return -1;
 
-  // Unrolled loop for better performance
-  while ( changes + 4 < changes_end )
+  int len{0};
+  auto rc = region->getFCharIterator( region->cursor.x - 1
+                                    , region->cursor.y - 1 );  // Region character iterator
+  auto iter = buffer.begin();
+  const auto last = buffer.end();
+
+  while ( iter != last )
   {
-    changes[0].covered = false;
-    changes[1].covered = false;
-    changes[2].covered = false;
-    changes[3].covered = false;
-    changes += 4;
+    const auto n = printRegionRange(region, rc, iter, last);  // Fast path
+    len += n;
+    iter += FVTermBuffer::difference_type(n);
+
+    if ( iter == last
+      || printComplexChar(region, rc, *iter) == -1 )  // Print next character
+      break;  // No region or end of region reached
+
+    ++len;
+    ++iter;
   }
 
-  while ( changes < changes_end )  // Handle remaining lines
-  {
-    changes->covered = false;
-    ++changes;
-  }
+  return len;
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::determineLineCoveredState ( const FTermRegion* const win
-                                              , FTermRegion* src ) const noexcept
+auto FVTermPainter::print ( FTermRegion* region
+                          , const FChar& term_char ) const noexcept -> int
 {
-  // Requirements: The two regions have been checked for overlap
+  if ( ! region )
+    return -1;  // No region
 
-  const int win_height = win->minimized ? win->min_size.height
-                                        : getFullRegionHeight(win);
-  const int src_height = src->minimized ? src->min_size.height
-                                        : getFullRegionHeight(src);
-  const int win_y_min = win->position.y;
-  const int win_y_max = win_y_min + win_height;
-  const int src_y_min = src->position.y;
-  const int src_y_max = src_y_min + src_height;
-  const int overlap_start = std::max(win_y_min, src_y_min);
-  const int overlap_end = std::min(win_y_max, src_y_max);
-  const auto start = overlap_start - src_y_min;
-  const auto end = overlap_end - src_y_min;
-  auto changes_base = src->changes_in_line.begin();
-  auto changes = changes_base + start;
-  const auto changes_end = changes_base + end;
-
-  // Unrolled loop for better performance
-  while ( changes + 4 <= changes_end )
-  {
-    changes[0].covered = true;
-    changes[1].covered = true;
-    changes[2].covered = true;
-    changes[3].covered = true;
-    changes += 4;
-  }
-
-  while ( changes < changes_end )  // Handle remaining lines
-  {
-    changes->covered = true;
-    ++changes;
-  }
-}
-
-//----------------------------------------------------------------------
-auto FVTerm::canUpdateTerminalNow() const -> bool
-{
-  // Check if terminal updates were stopped, application is stopping,
-  // VTerm has no changes, or the drawing is not completed
-
-  return  ! FVTerm::areTerminalUpdatesPaused()
-       && ! FApplication::isQuit()
-       && ( foutput->isFlushTimeout() || FVTerm::isTerminalUpdateForced() )
-       && FVTerm::hasPendingTerminalUpdates()
-       && FVTerm::isDrawingFinished();
-}
-
-//----------------------------------------------------------------------
-auto FVTerm::hasPendingUpdates (const FTermRegion* region) noexcept -> bool
-{
-  return (region && region->has_changes);
+  auto rc = region->getFCharIterator( region->cursor.x - 1
+                                    , region->cursor.y - 1 );  // Region character iterator
+  return printComplexChar(region, rc, term_char);
 }
 
 }  // namespace finalcut

@@ -319,9 +319,6 @@ class FVTerm : public FVTermAttribute
       NoTrans  has_no_transparency;
     };
 
-    // Constants
-    static constexpr int DEFAULT_MINIMIZED_HEIGHT = 1;
-
     // Enumeration
     enum class CoveredState : uInt8
     {
@@ -349,88 +346,18 @@ class FVTerm : public FVTermAttribute
     static auto getGlobalFVTermInstance() noexcept -> FVTerm*&;
     static auto isInitialized() noexcept -> bool;
     void  resetRegionEncoding() const;
-    void  resetTextRegionToDefault (FTermRegion*, const FSize&) const noexcept;
-    auto  resizeTextRegion (FTermRegion*, std::size_t, std::size_t ) const -> bool;
-    auto  resizeTextRegion (FTermRegion*, std::size_t) const -> bool;
-    auto  isCovered (const FPoint&, const FTermRegion*) const noexcept -> CoveredState;
-    auto  isRegionValid (const FShadowBox&) const noexcept -> bool;
-    auto  isSizeEqual (const FTermRegion*, const FShadowBox&) const noexcept -> bool;
-    constexpr auto  needsHeightResize (const FTermRegion*, const std::size_t) const noexcept -> bool;
-    constexpr auto  needsWidthResize (const FTermRegion*, const std::size_t) const noexcept -> bool;
-    auto  tryResizeRegion (FTermRegion*, const std::size_t, const std::size_t) const -> bool;
-    void  updateRegionProperties (FTermRegion*, const FShadowBox&) const noexcept;
-    constexpr auto  getFullRegionWidth (const FTermRegion*) const noexcept -> int;
-    constexpr auto  getFullRegionHeight (const FTermRegion*) const noexcept -> int;
-    void  passChangesToOverlap (const FTermRegion*) const;
-    void  processOverlappingWindows (const FTermRegion*, const FVTermList&) const;
-    void  passChangesToOverlappingWindow (FTermRegion*, const FTermRegion*) const noexcept;
-    void  passChangesToOverlappingWindowLine (FTermRegion*, int, const FTermRegion*) const noexcept;
-    auto  calculateStartCoordinate (int, int) const noexcept -> int;
-    auto  calculateEndCoordinate (int, int, int, int) const noexcept -> int;
     void  incrementChangeCount();
     void  decrementChangeCount();
-    void  updateVTerm() const;
-    void  updateVTermDesktop() const;
-    void  updateVTermWindow (FTermRegion*) const;
-    auto  computeLayerGeometry (const FTermRegion*) const noexcept -> LayerGeometry;
-    auto  isLayerOutsideVTerm (const LayerGeometry&) const noexcept -> bool;
-    void  buildLineChangeBatch ( const FTermRegion*
-                               , const LayerGeometry&
-                               , FLineChangesBatch&) const noexcept;
-    void  applyLineBatch ( FTermRegion*
-                         , const LayerGeometry&
-                         , const FLineChangesBatch&) const noexcept;
-    void  updateVTermChangesFromBatch ( const LayerGeometry&
-                                      , FLineChangesBatch& ) const noexcept;
     void  scrollTerminalForward() const;
     void  scrollTerminalReverse() const;
-    void  callPreprocessingHandler (const FTermRegion*) const;
-    auto  hasChildRegionChanges (const FTermRegion*) const -> bool;
-    void  clearChildRegionChanges (const FTermRegion*) const;
-    static constexpr auto  isInsideRegion (const FPoint&, const FTermRegion*) noexcept -> bool;
     auto  isInsideTerminal (const FPoint&) const noexcept -> bool;
-    static constexpr auto  isFCharTransparent (const FChar&) noexcept -> bool;
-    auto  isTransparentInvisible (const FChar&) const noexcept -> bool;
     template <typename FOutputType>
     void  init();
     void  initFromGlobalInstance();
     void  initSettings();
     void  finish() const;
     void  saveCurrentVTerm (uInt, uInt) const noexcept;
-    void  putRegionLine (const FChar&, FChar&, const int) const noexcept;
-    void  applyColorOverlay (const FChar&, FChar&) const;
-    void  inheritBackground (const FChar&, FChar&) const;
-    void  putMultiLayerRegionLine (FChar_iterator, const int, const FPoint&) const noexcept;
-    void  processCharState (SearchState&, const FChar&, FChar&) const noexcept;
-    void  putRegionLineWithTransparency (RegionRenderContext&, const int) const;
-    void  processAndFlushRegion (RegionRenderContext&, bool, FChar_const_iterator) const;
-    void  addRegionLineWithTransparency (FChar_const_iterator, FChar_iterator, const int) const;
-    void  addTransparentRegionLine (const FChar_const_iterator&, const FChar_iterator&, const int) const;
-    void  addTransparentRegionChar (const FChar&, FChar&) const;
-    auto  clearFullRegion (FTermRegion*, FChar&) const -> bool;
-    void  clearRegionWithShadow (FTermRegion*, const FChar&) const noexcept;
-    auto  printPlain (FTermRegion*, const FString&) const noexcept -> int;
-    auto  printWrap (FTermRegion*, FChar_iterator&) const -> bool;
-    auto  interpretControlCodes ( FTermRegion*
-                                , FChar_iterator&
-                                , const FChar&) const noexcept -> bool;
-    auto  printRegionRange ( FTermRegion* region
-                           , FChar_iterator&
-                           , FVTermBuffer::const_iterator
-                           , FVTermBuffer::const_iterator ) const noexcept -> int;
-    auto  printComplexChar (FTermRegion*, FChar_iterator&, const FChar&) const noexcept -> int;
-    auto  printCharacterOnCoordinate ( FTermRegion*
-                                     , const FChar_iterator&
-                                     , const FChar&) const noexcept -> std::size_t;
-    void  printPaddingCharacter (FTermRegion*, const FChar&) const;
-    void  putNonTransparent (FChar_const_iterator, FChar_iterator&, int&) const;
-    void  addTransparent (FChar_const_iterator, FChar_iterator&, int&) const;
-    void  addVDesktopToListIfExists (FTermRegionList&) const;
-    void  determineCoveredRegions (FTermRegion*) const;
-    void  resetLineCoveredState (FTermRegion*) const;
-    void  determineLineCoveredState (const FTermRegion* const, FTermRegion*) const noexcept;
     auto  canUpdateTerminalNow() const -> bool;
-    static auto hasPendingUpdates (const FTermRegion*) noexcept -> bool;
 
     // Data members
     FTermRegion*                  print_region{nullptr};        // Print region for this object
@@ -455,6 +382,10 @@ class FVTerm : public FVTermAttribute
     static bool                   draw_completed;
     static bool                   no_terminal_updates;
     static bool                   force_terminal_update;
+
+    // Friend classes
+    friend class FVTermCompositor;
+    friend class FVTermPainter;
 
     // Friend function
     friend void setPrintRegion (FWidget&, FTermRegion*);
@@ -936,7 +867,10 @@ inline auto FVTerm::areTerminalUpdatesPaused() noexcept -> bool
 
 //----------------------------------------------------------------------
 inline auto FVTerm::hasPendingTerminalUpdates() noexcept -> bool
-{ return hasPendingUpdates(getGlobalFVTermInstance()->vterm.get()); }
+{
+  const auto* vterm_region = getGlobalFVTermInstance()->vterm.get();
+  return vterm_region && vterm_region->has_changes;
+}
 
 //----------------------------------------------------------------------
 template <typename... Args>

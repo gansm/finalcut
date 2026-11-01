@@ -200,7 +200,7 @@ void sigHandler (int num)
   signal_handler(num);
 }
 
-}
+}  // anonymous namespace
 
 #if !defined(USE_KQUEUE_TIMER)
   using u_short = unsigned short;

@@ -44,7 +44,7 @@ namespace
   constexpr uInt MAX_DRAIN_ATTEMPTS{5};  // Prevent infinite loops
   constexpr std::size_t PIPE_BUFFER_SIZE{sizeof(PipeBuffer)};
   constexpr std::chrono::milliseconds RETRY_DELAY{1};
-}
+}  // anonymous namespace
 
 // Function forward declarations
 auto isValidFileDescriptor (FileDescriptor) noexcept -> bool;
