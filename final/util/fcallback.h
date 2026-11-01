@@ -333,9 +333,8 @@ inline void FCallback::addCallback ( FString&& cb_signal
 {
   // Add a function reference as callback
 
-  auto raw_ptr = reinterpret_cast<const void*>(&cb_function);
   auto fn = std::bind (cb_function, std::forward<Args>(args)...);
-  callback_objects.emplace_back (std::move(cb_signal), nullptr, raw_ptr, fn);
+  callback_objects.emplace_back (std::move(cb_signal), nullptr, cb_function, fn);
 }
 
 //----------------------------------------------------------------------
