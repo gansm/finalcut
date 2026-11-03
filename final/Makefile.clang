@@ -62,8 +62,8 @@ INCLUDE_HEADERS = \
 	vterm/fvterm.h \
 	vterm/fvtermattribute.h \
 	vterm/fvtermbuffer.h \
-        vterm/fvtermcompositor.h \
-        vterm/fvtermpainter.h \
+	vterm/fvtermcompositor.h \
+	vterm/fvtermpainter.h \
 	widget/fbusyindicator.h \
 	widget/fbuttongroup.h \
 	widget/fbutton.h \

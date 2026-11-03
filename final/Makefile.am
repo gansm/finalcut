@@ -193,8 +193,8 @@ finalcutvterminclude_HEADERS = \
 	vterm/fvterm.h \
 	vterm/fvtermattribute.h \
 	vterm/fvtermbuffer.h \
-        vterm/fvtermcompositor.h \
-        vterm/fvtermpainter.h
+	vterm/fvtermcompositor.h \
+	vterm/fvtermpainter.h
 
 finalcutwidgetinclude_HEADERS = \
 	widget/fbusyindicator.h \

@@ -102,13 +102,13 @@ auto main() -> int
                 {
                    std::cout << "Tick" << std::endl;
                 }
-                , nullptr );
+              , nullptr );
 
   timer2.init ( [] (const finalcut::Monitor*, short)
                 {
                   std::cout << "Tock" << std::endl;
                 }
-                , nullptr );
+              , nullptr );
 
   timer1.setInterval ( std::chrono::nanoseconds{ 500'000'000 }
                      , std::chrono::nanoseconds{ 1'000'000'000 } );
@@ -155,7 +155,7 @@ auto main() -> int
                          {
                            std::cout << "A backend event has occurred." << std::endl;
                          }
-                         , nullptr );
+                       , nullptr );
 
   // Start monitors
   timer1.resume();

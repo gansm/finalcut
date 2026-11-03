@@ -1640,7 +1640,7 @@ void FApplication::processLogger() const
 }
 
 //----------------------------------------------------------------------
-auto FApplication::processNextEvent() -> bool
+inline auto FApplication::processNextEvent() -> bool
 {
   uInt num_events{0};
 
