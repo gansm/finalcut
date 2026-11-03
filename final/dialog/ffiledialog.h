@@ -116,6 +116,7 @@ class FFileDialog : public FDialog
     void setPath (const FString&);
     void setFilter (const FString&);
     void setShowHiddenFiles (bool = true);
+    void setFilename (const FString&);
     void unsetShowHiddenFiles();
 
     // Event handler
@@ -126,6 +127,7 @@ class FFileDialog : public FDialog
                                 , const FString& = FString()
                                 , const FString& = FString() ) -> FString;
     static auto fileSaveChooser ( FWidget*
+                                , const FString& = FString()
                                 , const FString& = FString()
                                 , const FString& = FString() ) -> FString;
 
@@ -175,16 +177,16 @@ class FFileDialog : public FDialog
     auto numOfDirs() -> sInt64;
     void sortDir();
     auto readDir() -> int;
-    void getEntry (const std::string&, std::string&& name, const struct dirent*);
-    void followSymLink (const std::string&, FDirEntry&) const;
+    void getEntry (const char* const, const struct dirent*);
+    void followSymLink (const char* const, FDirEntry&) const;
     auto openDirectory() -> DIR*;
     auto closeDirectory (DIR*) -> CloseDir;
     void readDirEntries (DIR*);
-    auto getSelectedFileName() const -> std::string;
-    auto isCurrentDirectory (const std::string&) const -> bool;
-    auto isParentDirectory (const std::string&) const -> bool;
-    auto isHiddenEntry (const std::string&) const -> bool;
-    auto isRootDirectory (const std::string&) const -> bool;
+    auto getSelectedFilename() const -> std::string;
+    auto isCurrentDirectory (const struct dirent*) const -> bool;
+    auto isParentDirectory (const struct dirent*) const -> bool;
+    auto isHiddenEntry (const struct dirent*) const -> bool;
+    auto isRootDirectory (const char* const) const -> bool;
     void dirEntriesToList();
     void selectDirectoryEntry (const std::string&);
     auto changeDir (const FString&) -> int;
@@ -197,6 +199,8 @@ class FFileDialog : public FDialog
     void activateDefaultFilter();
     void findItem (const FString&);
     void changeIntoSubDir();
+    void acceptSelection();
+    auto getSaveFilename() const -> std::string;
 
     // Callback methods
     void cb_processActivate();
@@ -210,8 +214,8 @@ class FFileDialog : public FDialog
     DirEntries  dir_entries{};
     FString     directory{};
     FString     filter_pattern{};
-    FLineEdit   file_name{this};
-    FListBox    file_browser{this};
+    FLineEdit   filename{this};
+    FListBox    filebrowser{this};
     FCheckBox   hidden_check{this};
     FButton     cancel_btn{this};
     FButton     open_btn{this};
@@ -227,7 +231,8 @@ class FFileDialog : public FDialog
     friend auto fileChooser ( FWidget*
                             , const FString&
                             , const FString&
-                            , FFileDialog::DialogType) -> FString;
+                            , FFileDialog::DialogType
+                            , const FString&) -> FString;
 };
 
 // FMessageBox inline functions
