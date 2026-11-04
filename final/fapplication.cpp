@@ -29,6 +29,8 @@
 #include <thread>
 
 #include "final/dialog/fmessagebox.h"
+#include "final/eventloop/eventloop.h"
+#include "final/eventloop/timer_monitor.h"
 #include "final/fapplication.h"
 #include "final/fevent.h"
 #include "final/fstartoptions.h"
@@ -134,6 +136,12 @@ FApplication::~FApplication()  // destructor
 
 // public methods of FApplication
 //----------------------------------------------------------------------
+auto FApplication::getMainLoop() -> EventLoop&
+{
+  return *main_loop;
+}
+
+//----------------------------------------------------------------------
 auto FApplication::getApplicationObject() -> FApplication*
 {
   return internal::var::app_object;
@@ -215,6 +223,29 @@ auto FApplication::exec() -> int  // run
 //----------------------------------------------------------------------
 auto FApplication::enterLoop() -> int  // event loop
 {
+  // Keep your existing early-return guard here
+  if ( quit_now || internal::var::exit_loop )
+    return EXIT_SUCCESS;
+
+  loop_level++;
+  quit_now = false;
+
+  if ( loop_level == 1 )
+  {
+    runMainLoop();            // outermost level: driven by EventLoop
+  }
+  else
+  {
+    // Nested level (modal dialog, FMessageBox, ...): unchanged for now
+    while ( ! (quit_now || internal::var::exit_loop) )
+      processNextEvent();
+  }
+
+  loop_level--;
+  internal::var::exit_loop = false;   // as before, whatever your current code does here
+  return quit_code;
+
+/*
   loop_level++;
   quit_now = false;
 
@@ -227,6 +258,7 @@ auto FApplication::enterLoop() -> int  // event loop
   internal::var::exit_loop = old_app_exit_loop;
   loop_level--;
   return 0;
+*/
 }
 
 //----------------------------------------------------------------------
@@ -645,6 +677,10 @@ void FApplication::init()
 
   // Set the resize handler
   FTermData::getInstance().setResizeHandler( [this] () { queueResize(); } );
+
+  // Initialize the main event loop and the main timer
+  main_loop = std::make_unique<EventLoop>();
+  main_timer = std::make_unique<TimerMonitor>(main_loop.get());
 }
 
 //----------------------------------------------------------------------
@@ -1621,6 +1657,24 @@ void FApplication::queueResize()
 
   auto ev = std::make_unique<FEvent>(Event::Resize);
   FApplication::queueEvent(this, std::move(ev));
+}
+
+//----------------------------------------------------------------------
+void FApplication::runMainLoop()
+{
+  using namespace std::chrono_literals;
+  main_timer->init ( [this] (const Monitor*, short)
+                     {
+                       processNextEvent();
+
+                       if ( quit_now || internal::var::exit_loop )
+                         main_loop->leave();
+                     }
+                   , nullptr );
+
+  main_timer->setInterval (5ms, 5ms);  // First expiry, period
+  main_timer->resume();
+  static_cast<void>(main_loop->run());
 }
 
 //----------------------------------------------------------------------

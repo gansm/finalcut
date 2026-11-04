@@ -74,20 +74,22 @@ namespace finalcut
 {
 
 // class forward declaration
+class EventLoop;
 class FAccelEvent;
 class FCloseEvent;
 class FEvent;
 class FFocusEvent;
 class FKeyEvent;
 class FLog;
+class FMouseControl;
 class FMouseData;
 class FMouseEvent;
+class FObject;
+class FPoint;
 class FStartOptions;
 class FTimerEvent;
 class FWheelEvent;
-class FMouseControl;
-class FPoint;
-class FObject;
+class TimerMonitor; 
 
 //----------------------------------------------------------------------
 // class FApplication
@@ -122,6 +124,7 @@ class FApplication : public FWidget
     // Accessors
     auto         getClassName() const -> FString override;
     auto         getArgs() const -> Args;
+    auto         getMainLoop() -> EventLoop&;
     static auto  getApplicationObject() -> FApplication*;
     static auto  getKeyboardWidget() -> FWidget*;
     static auto  getWidgetCloseList() -> FWidgetList&;
@@ -179,6 +182,8 @@ class FApplication : public FWidget
     using EventPair = std::pair<FObject*, std::unique_ptr<FEvent>>;
     using FEventQueue = std::deque<EventPair>;
     using FMouseHandlerList = std::vector<FMouseHandler>;
+    using EventLoopPtr = std::unique_ptr<EventLoop>;
+    using TimerMonitorPtr = std::unique_ptr<TimerMonitor>;
     using CmdMap = std::unordered_map<int, std::function<void(char*)>>;
     using rdbuf = std::streambuf*;
 
@@ -249,6 +254,7 @@ class FApplication : public FWidget
     void         processRedraw();
     void         queueLog();
     void         queueResize();
+    void         runMainLoop();
     void         processLogger() const;
     auto         processNextEvent() -> bool;
     void         performTimerAction (FObject*, FEvent*) override;
@@ -259,6 +265,8 @@ class FApplication : public FWidget
     Args              app_args{};
     uInt64            key_timeout{100'000};        // 100 ms
     uInt64            dblclick_interval{500'000};  // 500 ms
+    EventLoopPtr      main_loop{};
+    TimerMonitorPtr   main_timer{};
     FEventQueue       event_queue{};
     FWidgetList       draw_list{};
     FWidgetList       close_widget_list;
