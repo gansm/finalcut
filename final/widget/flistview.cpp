@@ -1404,7 +1404,7 @@ void FListView::adjustSize()
 //----------------------------------------------------------------------
 auto FListView::getNullIterator() -> FObject::iterator
 {
-  return data.selflist.end();
+  return data.selflist.begin()+1;
 }
 
 //----------------------------------------------------------------------
@@ -1425,6 +1425,7 @@ void FListView::init()
   initScrollBar (scroll.vbar, Orientation::Vertical, this, &FListView::cb_vbarChange);
   initScrollBar (scroll.hbar, Orientation::Horizontal, this, &FListView::cb_hbarChange);
   data.selflist.push_back(this);
+  data.selflist.push_back(nullptr);
   data.root = data.selflist.begin();
   FListView::setGeometry (FPoint{1, 1}, FSize{5, 4}, false);  // initialize geometry values
   mapKeyFunctions();
