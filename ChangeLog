@@ -1,3 +1,6 @@
+2026-11-08  Markus Gans  <guru.mail@muenster.de>
+	* Improve save dialog functionality in FFileDialog
+
 2026-11-01  Markus Gans  <guru.mail@muenster.de>
 	* Refactor FVTerm: Move private methods to an anonymous namespace and 
 	  extract them into helper classes

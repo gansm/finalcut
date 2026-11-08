@@ -1053,7 +1053,7 @@ void MyDialog::cb_view (const finalcut::FMenuItem* item)
 
   const auto& view = new TextWindow(this);
   std::vector<char> buffer(path.begin(), path.end());
-  buffer.push_back('\0'); // Ensure null-termination
+  buffer.push_back('\0');  // Ensure null-termination
   finalcut::FString file_name(basename(buffer.data()));
   view->setText ("Viewer: " + file_name);
   view->setGeometry ( FPoint { 1 + int((getRootWidget()->getWidth() - 60) / 2)

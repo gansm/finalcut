@@ -20,14 +20,14 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #define _BSD_SOURCE  // for D_TYPE in readdir
+#endif
+
 #include <algorithm>
 #include <array>
 #include <utility>
 #include <vector>
-
-#if defined(__CYGWIN__)
-  #define _BSD_SOURCE  // for D_TYPE in readdir
-#endif
 
 #include "final/dialog/ffiledialog.h"
 #include "final/fevent.h"
@@ -42,10 +42,28 @@ namespace finalcut
 
 // non-member functions
 //----------------------------------------------------------------------
-auto sortByName ( const FFileDialog::FDirEntry& lhs
-                , const FFileDialog::FDirEntry& rhs ) -> bool
+auto sortFileByName ( const FFileDialog::FDirEntry& lhs
+                    , const FFileDialog::FDirEntry& rhs ) -> bool
 {
   // lhs < rhs
+  return FStringCaseCompare(lhs.name, rhs.name) < 0;
+}
+
+//----------------------------------------------------------------------
+auto sortDirByName ( const FFileDialog::FDirEntry& lhs
+                   , const FFileDialog::FDirEntry& rhs ) -> bool
+{
+  // lhs < rhs
+
+  if ( lhs.name == rhs.name )
+    return false;
+
+  if ( lhs.name == ".." )  // ".." always comes first
+    return true;
+
+  if ( rhs.name == ".." )
+    return false;
+
   return FStringCaseCompare(lhs.name, rhs.name) < 0;
 }
 
@@ -57,24 +75,147 @@ auto sortDirFirst (const FFileDialog::FDirEntry& entry) -> bool
 }
 
 //----------------------------------------------------------------------
+auto isDirectory (const std::string& path) noexcept -> bool
+{
+  struct stat sb{};
+  return ::stat(path.data(), &sb) == 0 && S_ISDIR(sb.st_mode);
+}
+
+//----------------------------------------------------------------------
 auto isRegularFile (const std::string& path) noexcept -> bool
 {
   struct stat sb{};
-  return stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode);
+  return ::stat(path.data(), &sb) == 0 && S_ISREG(sb.st_mode);
+}
+
+//----------------------------------------------------------------------
+auto isFileAccessible (const std::string& path) noexcept -> bool
+{
+  if ( ! path.empty() )
+    return ::access( path.data(), F_OK ) == 0;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+void checkPath (const std::string& path, bool& exists, bool& is_dir) noexcept
+{
+  struct stat sb{};
+
+  if ( ::stat(path.data(), &sb) == 0)
+  {
+    exists = true;
+    is_dir = S_ISDIR(sb.st_mode);
+  }
+  else
+  {
+    exists = false;
+    is_dir = false;
+  }
+}
+
+//----------------------------------------------------------------------
+auto getParentPath (const std::string& path) -> std::string
+{
+  if ( path.empty() )
+    return {};
+
+  auto end_pos = path.size();
+
+  while ( end_pos > 1 && path[end_pos - 1] == '/' )
+    end_pos--;
+
+  const auto last_slash = path.find_last_of('/', end_pos - 1);
+
+  if ( last_slash == std::string::npos )
+    return {};
+
+  if ( last_slash == 0 )
+    return "/";
+
+  return path.substr(0, last_slash);
+}
+
+//----------------------------------------------------------------------
+auto getWorkingDirectory (const std::string& path) -> std::string
+{
+  bool exists = false;
+  bool is_dir = false;
+
+  checkPath(path, exists, is_dir);
+
+  if ( exists )
+  {
+    if ( is_dir )
+      return path;
+
+    return getParentPath(path);
+  }
+
+  auto parent_path = getParentPath(path);
+
+  if ( ! parent_path.empty() )
+  {
+    checkPath(parent_path, exists, is_dir);
+    return ( exists && is_dir ) ? parent_path : "/";
+  }
+
+  return "/";
+}
+
+//----------------------------------------------------------------------
+std::string getFilenameComponent (const std::string& path)
+{
+  const auto last_sep = path.find_last_of('/');
+
+  if ( last_sep == std::string::npos )
+    return path;
+
+  return path.substr(last_sep + 1);
+}
+
+//----------------------------------------------------------------------
+auto getFilename ( const std::string& path
+                 , FFileDialog::DialogType type) -> std::string
+{
+  if ( type == FFileDialog::DialogType::Save )
+    return getFilenameComponent(path);
+
+  bool exists = false;
+  bool is_dir = false;
+
+  checkPath(path, exists, is_dir);
+
+  if ( exists && ! is_dir )
+    return getFilenameComponent(path);
+
+  return {};
+}
+
+//----------------------------------------------------------------------
+void setAndSelectFilename ( FFileDialog& file_dialog
+                          , const FString& default_name )
+{
+  if ( file_dialog.getDialogType() != FFileDialog::DialogType::Save
+    || default_name.isEmpty() )
+    return;
+
+  // Set and select the file name
+  file_dialog.setFilename(default_name);
+  file_dialog.selectDirectoryEntry(default_name.toString());
 }
 
 //----------------------------------------------------------------------
 auto fileChooser ( FWidget* parent
-                 , const FString& dirname
+                 , const FString& dir_nane
                  , const FString& filter
-                 , FFileDialog::DialogType type
-                 , const FString& default_name ) -> FString
+                 , FFileDialog::DialogType type ) -> FString
 {
-  std::string chosen_file{};
-  FString path{dirname};
-  FString file_filter{filter};
+  auto full_path = dir_nane.toString();
+  FString path = getWorkingDirectory(full_path);
+  const FString& default_name = getFilename(full_path, type);
 
-  if ( path.isEmpty() )
+  if ( dir_nane.isEmpty() )
   {
     path.setString(FFileDialog::getHomeDir());
 
@@ -82,34 +223,47 @@ auto fileChooser ( FWidget* parent
       path.setString("/");
   }
 
-  if ( file_filter.isEmpty() )
-    file_filter.setString("*");
+  auto file_filter = filter.isEmpty() ? FString("*") : filter;
 
-  FFileDialog fileopen ( path
-                       , std::move(file_filter)
-                       , type
-                       , parent );
+  // Create a new FFileDialog object
+  FFileDialog file_dialog ( path
+                          , std::move(file_filter)
+                          , type
+                          , parent );
+  setAndSelectFilename (file_dialog, default_name);
 
-  if ( type == FFileDialog::DialogType::Save && ! default_name.isEmpty() )
-    fileopen.setFilename(default_name);
-
-  if ( fileopen.exec() != FDialog::ResultCode::Accept )
+  if ( file_dialog.exec() != FDialog::ResultCode::Accept )
     return {};  // Cancelled: no error message
 
-  const auto selected = fileopen.getSelectedFilename();
+  auto name = file_dialog.file_name.getText().trim();
 
-  if ( selected.empty() )
-    return {};
-
-  chosen_file = fileopen.getPath().toString() + selected;
-
-  // A save dialog may name a file that doesn't exist yet
-  if ( type == FFileDialog::DialogType::Save )
-    return chosen_file;
-
-  if ( ! isRegularFile(chosen_file) )
+  if ( name.isEmpty() )
   {
-    FMessageBox::error (&fileopen, chosen_file + "\nis not a file");
+    name = file_dialog.getSelectedFilename();
+
+    if ( name.isEmpty() )
+      return {};
+  }
+
+  const auto chosen_file = file_dialog.getAbsolutePath(name);
+  const auto chosen_str = chosen_file.toString();
+
+  if ( type == FFileDialog::DialogType::Save )
+  {
+    return chosen_file;
+  }
+
+  if ( type == FFileDialog::DialogType::Open )
+  {
+    if ( isFileAccessible(chosen_str) )
+      return chosen_file;
+
+    return {};
+  }
+
+  if ( ! isRegularFile(chosen_str) )
+  {
+    FMessageBox::error (&file_dialog, chosen_file + "\nis not a file");
     return {};
   }
 
@@ -130,7 +284,7 @@ FFileDialog::FFileDialog (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FFileDialog::FFileDialog ( const FString& dirname
+FFileDialog::FFileDialog ( const FString& dir_name
                          , FString&& filter
                          , DialogType type
                          , FWidget* parent )
@@ -138,8 +292,8 @@ FFileDialog::FFileDialog ( const FString& dirname
   , filter_pattern{std::move(filter)}
   , dlg_type{type}
 {
-  if ( ! dirname.isEmpty() )
-    setPath(dirname);
+  if ( ! dir_name.isEmpty() )
+    setPath(dir_name);
 
   init();
 }
@@ -158,24 +312,24 @@ auto FFileDialog::getSelectedFile() const -> FString
 //----------------------------------------------------------------------
 void FFileDialog::setFilename (const FString& name)
 {
-  filename.setText(name);
+  file_name.setText(name);
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::setPath (const FString& dir)
 {
-  const auto& dirname = dir.c_str();
+  const auto& dir_name = dir.c_str();
   std::array<char, MAXPATHLEN> resolved_path{};
   FString r_dir{};
   struct stat sb{};
 
-  if ( stat(dirname, &sb) != 0 )
+  if ( ::stat(dir_name, &sb) != 0 )
   {
     directory = '/';
     return;
   }
 
-  if ( S_ISLNK(sb.st_mode) && lstat(dirname, &sb) != 0 )
+  if ( S_ISLNK(sb.st_mode) && ::lstat(dir_name, &sb) != 0 )
   {
     directory = '/';
     return;
@@ -208,14 +362,14 @@ void FFileDialog::setFilter (const FString& filter)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::setShowHiddenFiles (bool enable)
+void FFileDialog::setShowHiddenFiles (bool state)
 {
-  if ( show_hidden == enable )
+  if ( show_hidden == state )
     return;
 
-  show_hidden = enable;
+  show_hidden = state;
   readDir();
-  filebrowser.redraw();
+  file_browser.redraw();
 }
 
 //----------------------------------------------------------------------
@@ -226,7 +380,7 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 
   FDialog::onKeyPress (ev);
 
-  if ( ! filebrowser.hasFocus() )
+  if ( ! file_browser.hasFocus() )
     return;
 
   const auto& key = ev->key();
@@ -240,19 +394,18 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 
 //----------------------------------------------------------------------
 auto FFileDialog::fileOpenChooser ( FWidget* parent
-                                  , const FString& dirname
+                                  , const FString& dir_name
                                   , const FString& filter ) -> FString
 {
-  return fileChooser (parent, dirname, filter, DialogType::Open, FString{});
+  return fileChooser (parent, dir_name, filter, DialogType::Open);
 }
 
 //----------------------------------------------------------------------
 auto FFileDialog::fileSaveChooser ( FWidget* parent
-                                  , const FString& dirname
-                                  , const FString& filter
-                                  , const FString& default_name ) -> FString
+                                  , const FString& dir_name
+                                  , const FString& filter ) -> FString
 {
-  return fileChooser (parent, dirname, filter, DialogType::Save, default_name);
+  return fileChooser (parent, dir_name, filter, DialogType::Save);
 }
 
 
@@ -271,7 +424,7 @@ void FFileDialog::adjustSize()
   const int X = 1 + int((max_width - getWidth()) / 2);
   const int Y = 1 + int((max_height - getHeight()) / 3);
   setPos(FPoint{X, Y}, false);
-  filebrowser.setHeight (h - 8, false);
+  file_browser.setHeight (h - 8, false);
   hidden_check.setY (int(h) - 4, false);
   cancel_btn.setY (int(h) - 4, false);
   open_btn.setY (int(h) - 4, false);
@@ -300,12 +453,14 @@ void FFileDialog::init()
 //----------------------------------------------------------------------
 inline void FFileDialog::widgetSettings (const FPoint& pos)
 {
-  filename.setLabelText ("File&name");
-  filename.setText (filter_pattern);
-  filename.setGeometry (FPoint{11, 1}, FSize{28, 1});
-  filename.setFocus();
+  if ( dlg_type != DialogType::Save )
+    file_name.setText (filter_pattern);
 
-  filebrowser.setGeometry (FPoint{2, 3}, FSize{38, 6});
+  file_name.setLabelText ("File&name");
+  file_name.setGeometry (FPoint{11, 1}, FSize{28, 1});
+  file_name.setFocus();
+
+  file_browser.setGeometry (FPoint{2, 3}, FSize{38, 6});
   printPath (directory);
 
   hidden_check.setText ("&hidden files");
@@ -326,19 +481,19 @@ inline void FFileDialog::widgetSettings (const FPoint& pos)
 //----------------------------------------------------------------------
 void FFileDialog::initCallbacks()
 {
-  filename.addCallback
+  file_name.addCallback
   (
     "activate",
     this, &FFileDialog::cb_processActivate
   );
 
-  filebrowser.addCallback
+  file_browser.addCallback
   (
     "row-changed",
     this, &FFileDialog::cb_processRowChanged
   );
 
-  filebrowser.addCallback
+  file_browser.addCallback
   (
     "clicked",
     this, &FFileDialog::cb_processClicked
@@ -411,20 +566,22 @@ auto FFileDialog::numOfDirs() -> sInt64
 //----------------------------------------------------------------------
 void FFileDialog::sortDir()
 {
-  const sInt64 start = dir_entries.cbegin()->name == ".." ? 1 : 0;
   const sInt64 dir_num = numOfDirs();
-  // directories first
-  std::partition ( dir_entries.begin() + start
+
+  // Directories first
+  std::partition ( dir_entries.begin()
                  , dir_entries.end()
                  , sortDirFirst );
-  // sort directories by name
-  std::sort ( dir_entries.begin() + start
+
+  // Sort directories by name
+  std::sort ( dir_entries.begin()
             , dir_entries.begin() + dir_num
-            , sortByName );
-  // sort files by name
+            , sortDirByName );
+
+  // Sort files by name
   std::sort ( dir_entries.begin() + dir_num
             , dir_entries.end()
-            , sortByName );
+            , sortFileByName );
 }
 
 //----------------------------------------------------------------------
@@ -449,7 +606,7 @@ auto FFileDialog::readDir() -> int
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
+void FFileDialog::getEntry (const std::string& dir, const struct dirent* d_entry)
 {
   const auto& filter = filter_pattern.toString();
   FDirEntry entry{};
@@ -466,7 +623,7 @@ void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
   entry.socket           = (d_entry->d_type & DT_SOCK) == DT_SOCK;
 #else
   struct stat s{};
-  stat (entry.name.c_str(), &s);
+  ::stat (d_entry->d_name, &s);
   entry.fifo             = S_ISFIFO (s.st_mode);
   entry.character_device = S_ISCHR (s.st_mode);
   entry.directory        = S_ISDIR (s.st_mode);
@@ -485,7 +642,7 @@ void FFileDialog::getEntry (const char* const dir, const struct dirent* d_entry)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
+void FFileDialog::followSymLink (const std::string& dir, FDirEntry& entry) const
 {
   if ( ! entry.symbolic_link )
     return;  // No symbolic link
@@ -500,7 +657,7 @@ void FFileDialog::followSymLink (const char* const dir, FDirEntry& entry) const
   if ( fsystem->realpath(symLink.data(), resolved_path.data()) == nullptr )
     return;  // Cannot follow the symlink
 
-  if ( lstat(resolved_path.data(), &sb) == -1 )
+  if ( ::lstat(resolved_path.data(), &sb) == -1 )
     return;  // Cannot get file status
 
   entry.directory = S_ISDIR(sb.st_mode);
@@ -537,7 +694,7 @@ auto FFileDialog::closeDirectory (DIR* directory_stream) -> CloseDir
 //----------------------------------------------------------------------
 void FFileDialog::readDirEntries (DIR* directory_stream)
 {
-  const auto& dir = directory.c_str();
+  const auto& dir_name = directory.toString();
 
   while ( true )
   {
@@ -552,10 +709,10 @@ void FFileDialog::readDirEntries (DIR* directory_stream)
       if ( ! show_hidden && isHiddenEntry(next) )
         continue;  // Skip hidden entries
 
-      if ( isRootDirectory(dir) && isParentDirectory(next) )
+      if ( isRootDirectory(dir_name) && isParentDirectory(next) )
         continue;  // Skip ".." for the root directory
 
-      getEntry(dir, next);
+      getEntry(dir_name, next);
     }
     else
     {
@@ -571,10 +728,8 @@ void FFileDialog::readDirEntries (DIR* directory_stream)
 auto FFileDialog::getSelectedFilename() const -> std::string
 {
   // In save mode the typed name counts, not the highlighted list item
-  if ( dlg_type == DialogType::Save )
-    return getSaveFilename();
 
-  const auto item = filebrowser.currentItem();
+  const auto item = file_browser.currentItem();
 
   if ( item == 0 || item > dir_entries.size() )
     return {};
@@ -588,21 +743,46 @@ auto FFileDialog::getSelectedFilename() const -> std::string
 }
 
 //----------------------------------------------------------------------
-auto FFileDialog::getSaveFilename() const -> std::string
+auto FFileDialog::interpretInputType() const -> InputType
 {
-  const auto input = filename.getText().trim();
+  const auto input = file_name.getText().trim();
 
-  if ( input.isEmpty() || isFilterInput() || isDirectoryInput() )
-    return {};
+  if ( input.isEmpty() )
+    return InputType::Undefined;
+
+  if ( isFilterInput() )
+    return InputType::Filter;
+
+  if ( isDirectoryInput() )
+  {
+    FString dir_name{getAbsolutePath(input)};
+
+    if ( isDirectory(dir_name.toString()) )
+      return InputType::Directory;
+
+    if ( isFileAccessible(dir_name.toString()) )
+      return InputType::File;
+  }
 
   const auto name = input.toString();
+  const auto iter = \
+      std::find_if ( std::begin(dir_entries)
+                   , std::end(dir_entries)
+                   , [&name] (const auto& entry)
+                     {
+                       return ! entry.name.empty()
+                           && ! name.empty()
+                           && entry.name == name;
+                     }
+                   );
 
-  // A directory name is not a file name
-  const bool is_dir = std::any_of ( std::begin(dir_entries)
-                                  , std::end(dir_entries)
-                                  , [&name] (const auto& entry)
-                                    { return entry.directory && entry.name == name; } );
-  return is_dir ? std::string{} : name;
+  if ( iter == std::end(dir_entries) )
+    return InputType::Undefined;
+
+  if ( iter->directory )
+    return InputType::Directory;
+
+  return InputType::File;
 }
 
 //----------------------------------------------------------------------
@@ -632,9 +812,10 @@ auto FFileDialog::isHiddenEntry (const struct dirent* entry) const -> bool
 }
 
 //----------------------------------------------------------------------
-auto FFileDialog::isRootDirectory (const char* const dir) const -> bool
+auto FFileDialog::isRootDirectory (const std::string& dir) const -> bool
 {
-  return dir[0] == '/'
+  return dir.size() > 0
+      && dir[0] == '/'
       && dir[1] == '\0';
 }
 
@@ -643,7 +824,7 @@ void FFileDialog::dirEntriesToList()
 {
   // Fill list with directory entries
 
-  filebrowser.clear();
+  file_browser.clear();
 
   if ( dir_entries.empty() )
     return;
@@ -653,9 +834,9 @@ void FFileDialog::dirEntriesToList()
                 , [this] (const auto& entry)
                   {
                     if ( entry.directory )
-                      filebrowser.insert(FString{entry.name}, BracketType::Brackets);
+                      file_browser.insert(FString{entry.name}, BracketType::Brackets);
                     else
-                      filebrowser.insert(FString{entry.name});
+                      file_browser.insert(FString{entry.name});
                   }
                 );
 }
@@ -672,8 +853,16 @@ void FFileDialog::selectDirectoryEntry (const std::string& name)
   {
     if ( entry.name == name )
     {
-      filebrowser.setCurrentItem(i);
-      filename.setText(name + '/');
+      file_browser.setCurrentItem(i);
+
+      if ( dlg_type == DialogType::Save )
+        break;
+
+      if ( entry.directory )
+        file_name.setText(name + '/');
+      else
+        file_name.setText(name);
+
       break;
     }
 
@@ -682,20 +871,59 @@ void FFileDialog::selectDirectoryEntry (const std::string& name)
 }
 
 //----------------------------------------------------------------------
-auto FFileDialog::changeDir (const FString& dirname) -> int
+auto FFileDialog::getAbsolutePath (const FString& dir_name) const -> FString
 {
-  FString lastdir{directory};
-  FString newdir{dirname};
+  FString newdir{dir_name};
 
+  // Path Resolution
   if ( newdir.includes('~') )
     newdir = newdir.replace('~', getHomeDir());
 
   if ( newdir[0] == '/' )
-    setPath(newdir);
+    return newdir;
   else
-    setPath(directory + newdir);
+    return directory + newdir;
+}
 
-  switch ( readDir() )
+//----------------------------------------------------------------------
+void FFileDialog::handleParentDirectoryChange ( const FString& lastdir
+                                              , bool is_non_save_dlg )
+{
+  if ( lastdir == FString{'/'} )
+  {
+    if ( is_non_save_dlg )
+      file_name.setText('/');
+
+    return;
+  }
+
+  auto base_name = getFilenameComponent(lastdir.toString());
+  selectDirectoryEntry(base_name);
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::handleDefaultDirectorySelection()
+{
+  if ( dir_entries.empty() )
+    return;
+
+  FString firstname{dir_entries[0].name};
+
+  if ( dir_entries[0].directory )
+    file_name.setText(firstname + '/');
+  else
+    file_name.setText(firstname);
+}
+
+//----------------------------------------------------------------------
+auto FFileDialog::changeDir (const FString& dir_name) -> int
+{
+  const auto is_non_save_dlg = dlg_type != DialogType::Save;
+  const auto lastdir = directory;
+  const auto newdir = getAbsolutePath(dir_name);
+  setPath(newdir);
+
+  switch ( readDir() )  // Read the directory and handle errors
   {
     case -1:
       setPath(lastdir);
@@ -709,27 +937,16 @@ auto FFileDialog::changeDir (const FString& dirname) -> int
     case 0:
       if ( newdir == FString{".."} )
       {
-        if ( lastdir == FString{'/'} )
-          filename.setText('/');
-        else
-        {
-          auto baseName = std::string(basename(lastdir.c_str()));
-          selectDirectoryEntry (baseName);
-        }
+        handleParentDirectoryChange (lastdir, is_non_save_dlg);
       }
-      else
+      else if ( is_non_save_dlg )
       {
-        FString firstname{dir_entries[0].name};
-
-        if ( dir_entries[0].directory )
-          filename.setText(firstname + '/');
-        else
-          filename.setText(firstname);
+        handleDefaultDirectorySelection();
       }
 
       printPath(directory);
-      filename.redraw();
-      filebrowser.redraw();
+      file_name.redraw();
+      file_browser.redraw();
       // fall through
     default:
       return 0;
@@ -740,7 +957,7 @@ auto FFileDialog::changeDir (const FString& dirname) -> int
 void FFileDialog::printPath (const FString& txt)
 {
   const auto& path = txt;
-  const std::size_t max_width = filebrowser.getWidth() - 4;
+  const std::size_t max_width = file_browser.getWidth() - 4;
   const auto column_width = getColumnWidth(path);
 
   if ( column_width > max_width )
@@ -748,10 +965,10 @@ void FFileDialog::printPath (const FString& txt)
     const std::size_t width = max_width - 2;
     const std::size_t first = column_width + 1 - width;
     const FString sub_str{getColumnSubString (path, first, width)};
-    filebrowser.setText(".." + sub_str);
+    file_browser.setText(".." + sub_str);
   }
   else
-    filebrowser.setText(path);
+    file_browser.setText(path);
 }
 
 //----------------------------------------------------------------------
@@ -790,25 +1007,25 @@ auto FFileDialog::getHomeDir() -> FString
 //----------------------------------------------------------------------
 inline auto FFileDialog::isFilterInput() const -> bool
 {
-  return filename.getText().includes('*')
-      || filename.getText().includes('?');
+  return file_name.getText().includes('*')
+      || file_name.getText().includes('?');
 }
 
 //----------------------------------------------------------------------
 inline auto FFileDialog::isDirectoryInput() const -> bool
 {
-  return filename.getText().trim() == FString{".."}
-      || filename.getText().includes('/')
-      || filename.getText().includes('~');
+  return file_name.getText().trim() == FString{".."}
+      || file_name.getText().includes('/')
+      || file_name.getText().includes('~');
 }
 
 //----------------------------------------------------------------------
 inline void FFileDialog::activateNewFilter()
 {
-  setFilter(filename.getText());
+  setFilter(file_name.getText());
   redraw();  // Show new filter in title bar
   readDir();
-  filebrowser.redraw();
+  file_browser.redraw();
 }
 
 //----------------------------------------------------------------------
@@ -817,17 +1034,17 @@ inline void FFileDialog::activateDefaultFilter()
   setFilter("*");
   redraw();  // Delete filter from title bar
   readDir();
-  filebrowser.redraw();
+  file_browser.redraw();
 }
 
 //----------------------------------------------------------------------
 inline void FFileDialog::findItem (const FString& search_text)
 {
-  auto iter = filebrowser.findItem(search_text);
+  auto iter = file_browser.findItem(search_text);
 
-  if ( iter != filebrowser.getData().end() )
+  if ( iter != file_browser.getData().end() )
   {
-    filebrowser.setCurrentItem(iter);
+    file_browser.setCurrentItem(iter);
     done (ResultCode::Accept);
   }
   else
@@ -837,109 +1054,120 @@ inline void FFileDialog::findItem (const FString& search_text)
 //----------------------------------------------------------------------
 inline void FFileDialog::changeIntoSubDir()
 {
-  bool found{false};
-  const auto& input = filename.getText().trim();
+  const auto& input = file_name.getText().trim();
 
   if ( dir_entries.empty() )
     done (ResultCode::Reject);
 
-  found = std::any_of ( std::begin(dir_entries)
-                      , std::end(dir_entries)
-                      , [&input] (auto& entry)
-                        {
-                          return ! entry.name.empty()
-                              && input
-                              && ! input.isEmpty()
-                              && entry.name == input.toString()
-                              && entry.directory;
-                        }
-                      );
+  const auto name = input.toString();
+  const auto found = \
+      std::any_of ( std::begin(dir_entries)
+                  , std::end(dir_entries)
+                  , [&name] (auto& entry)
+                    {
+                      return ! entry.name.empty()
+                          && ! name.empty()
+                          && entry.name == name
+                          && entry.directory;
+                    }
+                  );
 
   if ( found )
   {
     changeDir(input);
     return;
   }
-
-  findItem(input);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::acceptSelection()
+auto FFileDialog::confirmOverwrite (const std::string& name) -> FMessageBox::ButtonType
 {
-  if ( dlg_type != DialogType::Save )
+  FMessageBox mbox ( "Replace File"
+                   , "Do you want to replace it?"
+                   , FMessageBox::ButtonType::Yes
+                   , FMessageBox::ButtonType::No
+                   , FMessageBox::ButtonType::Cancel
+                   , this );
+  mbox.setHeadline("\"" + FString{name} + "\" " + "already exists.");
+  mbox.setCenterText();
+  return mbox.exec();
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::processSaveSelection()
+{
+  const auto name = file_name.getText().trim().toString();
+  const auto path = getAbsolutePath(name);
+
+  if ( ! isFileAccessible(path.toString()) )
   {
+    // New non-existent file
     done (ResultCode::Accept);
     return;
   }
 
-  const auto input = filename.getText().trim();
+  // The file already exists
+  const auto reply = confirmOverwrite(name);
 
-  if ( input.isEmpty() )
-    return;
-
-  if ( isFilterInput() )
-  {
-    activateNewFilter();
-    return;
-  }
-
-  const auto name = getSaveFilename();
-
-  if ( name.empty() )  // directory or path input: browse into it
-  {
-    changeDir(input);
-    return;
-  }
-
-  const std::string full_path = directory.toString() + name;
-  struct stat sb{};
-
-  if ( stat(full_path.c_str(), &sb) != 0 )  // New file
-  {
+  if ( reply == FMessageBox::ButtonType::Yes )
     done (ResultCode::Accept);
-    return;
-  }
-
-  FMessageBox box ( "File exists"
-                  , FString{full_path} + "\nalready exists.\n\n"
-                    "Yes: overwrite   No: choose another name"
-                  , FMessageBox::ButtonType::Yes
-                  , FMessageBox::ButtonType::No
-                  , FMessageBox::ButtonType::Cancel
-                  , this );
-  const auto answer = box.exec();
-
-  if ( answer == FMessageBox::ButtonType::Yes )
-    done (ResultCode::Accept);
-  else if ( answer == FMessageBox::ButtonType::No )
-  {
-    filename.setFocus();
-    filename.redraw();
-  }
-  else
+  else if ( reply == FMessageBox::ButtonType::Cancel )
     done (ResultCode::Reject);
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::cb_processActivate()
 {
-  if ( isFilterInput() )
+  const auto input_type = interpretInputType();
+
+  if ( input_type == InputType::Filter )
+  {
     activateNewFilter();
-  else if ( filename.getText().isEmpty() )
+    return;
+  }
+
+  if ( file_name.getText().isEmpty() )
+  {
     activateDefaultFilter();
-  else if ( isDirectoryInput() )
-    changeDir(filename.getText().trim());
-  else if ( dlg_type == DialogType::Save )
-    acceptSelection();
-  else
+    return;
+  }
+
+  if ( input_type == InputType::Directory )
+  {
+    if ( isDirectoryInput() )
+    {
+      changeDir(file_name.getText().trim());
+      return;
+    }
+
     changeIntoSubDir();
+    return;
+  }
+
+  if ( dlg_type == DialogType::Save )
+  {
+    processSaveSelection();
+    return;
+  }
+
+  if ( input_type == InputType::File )
+  {
+    const auto input = file_name.getText().trim();
+
+    if ( isDirectoryInput() && isFileAccessible(input.toString()) )
+    {
+      done (ResultCode::Accept);
+      return;
+    }
+
+    findItem(input);
+  }
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::cb_processRowChanged()
 {
-  const std::size_t n = filebrowser.currentItem();
+  const std::size_t n = file_browser.currentItem();
 
   if ( n == 0 )
     return;
@@ -947,22 +1175,34 @@ void FFileDialog::cb_processRowChanged()
   const auto& name = FString{dir_entries[n - 1].name};
 
   if ( dir_entries[n - 1].directory )
-    filename.setText(name + '/');
+  {
+    if ( dlg_type != DialogType::Save )
+      file_name.setText(name + '/');
+  }
   else
-    filename.setText(name);
+    file_name.setText(name);
 
-  filename.redraw();
+  file_name.redraw();
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::cb_processClicked()
 {
-  const auto n = uLong(filebrowser.currentItem() - 1);
+  const auto n = uLong(file_browser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
+  {
     changeDir(dir_entries[n].name);
-  else
-    acceptSelection();
+    return;
+  }
+
+  if ( dlg_type != DialogType::Save )
+  {
+    done (ResultCode::Accept);
+    return;
+  }
+
+  processSaveSelection();
 }
 
 //----------------------------------------------------------------------
@@ -974,7 +1214,13 @@ void FFileDialog::cb_processCancel()
 //----------------------------------------------------------------------
 void FFileDialog::cb_processOpen()
 {
-  acceptSelection();
+  if ( dlg_type != DialogType::Save )
+  {
+    done (ResultCode::Accept);
+    return;
+  }
+
+  processSaveSelection();
 }
 
 //----------------------------------------------------------------------

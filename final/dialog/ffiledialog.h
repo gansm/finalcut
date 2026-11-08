@@ -111,6 +111,7 @@ class FFileDialog : public FDialog
     auto getFilter() const -> FString;
     auto getSelectedFile() const -> FString;
     auto getShowHiddenFiles() const noexcept -> bool;
+    auto getDialogType() const noexcept -> DialogType;
 
     // Mutators
     void setPath (const FString&);
@@ -128,7 +129,6 @@ class FFileDialog : public FDialog
                                 , const FString& = FString() ) -> FString;
     static auto fileSaveChooser ( FWidget*
                                 , const FString& = FString()
-                                , const FString& = FString()
                                 , const FString& = FString() ) -> FString;
 
   protected:
@@ -138,6 +138,14 @@ class FFileDialog : public FDialog
   private:
     // Enumeration
     enum class CloseDir : uInt8 { success, error };
+
+    enum class InputType : uInt8
+    {
+      Undefined,
+      Filter,
+      Directory,
+      File
+    };
 
     struct FDirEntry
     {
@@ -177,18 +185,22 @@ class FFileDialog : public FDialog
     auto numOfDirs() -> sInt64;
     void sortDir();
     auto readDir() -> int;
-    void getEntry (const char* const, const struct dirent*);
-    void followSymLink (const char* const, FDirEntry&) const;
+    void getEntry (const std::string&, const struct dirent*);
+    void followSymLink (const std::string&, FDirEntry&) const;
     auto openDirectory() -> DIR*;
     auto closeDirectory (DIR*) -> CloseDir;
     void readDirEntries (DIR*);
     auto getSelectedFilename() const -> std::string;
+    auto interpretInputType() const -> InputType;
     auto isCurrentDirectory (const struct dirent*) const -> bool;
     auto isParentDirectory (const struct dirent*) const -> bool;
     auto isHiddenEntry (const struct dirent*) const -> bool;
-    auto isRootDirectory (const char* const) const -> bool;
+    auto isRootDirectory (const std::string&) const -> bool;
     void dirEntriesToList();
     void selectDirectoryEntry (const std::string&);
+    auto getAbsolutePath (const FString&) const -> FString;
+    void handleParentDirectoryChange (const FString&, bool);
+    void handleDefaultDirectorySelection();
     auto changeDir (const FString&) -> int;
     void printPath (const FString&);
     void setTitelbarText();
@@ -199,8 +211,8 @@ class FFileDialog : public FDialog
     void activateDefaultFilter();
     void findItem (const FString&);
     void changeIntoSubDir();
-    void acceptSelection();
-    auto getSaveFilename() const -> std::string;
+    auto confirmOverwrite (const std::string&) -> FMessageBox::ButtonType;
+    void processSaveSelection();
 
     // Callback methods
     void cb_processActivate();
@@ -214,8 +226,8 @@ class FFileDialog : public FDialog
     DirEntries  dir_entries{};
     FString     directory{};
     FString     filter_pattern{};
-    FLineEdit   filename{this};
-    FListBox    filebrowser{this};
+    FLineEdit   file_name{this};
+    FListBox    file_browser{this};
     FCheckBox   hidden_check{this};
     FButton     cancel_btn{this};
     FButton     open_btn{this};
@@ -223,16 +235,17 @@ class FFileDialog : public FDialog
     bool        show_hidden{false};
 
     // Friend functions
-    friend auto sortByName ( const FFileDialog::FDirEntry&
-                           , const FFileDialog::FDirEntry& ) -> bool;
+    friend auto sortFileByName ( const FFileDialog::FDirEntry&
+                               , const FFileDialog::FDirEntry& ) -> bool;
+    friend auto sortDirByName ( const FFileDialog::FDirEntry&
+                              , const FFileDialog::FDirEntry& ) -> bool;
     friend auto sortDirFirst (const FFileDialog::FDirEntry&) -> bool;
     friend auto isRegularFile (const std::string&) noexcept -> bool;
-
+    friend void setAndSelectFilename (FFileDialog&, const FString&);
     friend auto fileChooser ( FWidget*
                             , const FString&
                             , const FString&
-                            , FFileDialog::DialogType
-                            , const FString&) -> FString;
+                            , FFileDialog::DialogType ) -> FString;
 };
 
 // FMessageBox inline functions
@@ -255,6 +268,10 @@ inline void FFileDialog::unsetShowHiddenFiles()
 //----------------------------------------------------------------------
 inline auto FFileDialog::getShowHiddenFiles() const noexcept -> bool
 { return show_hidden; }
+
+//----------------------------------------------------------------------
+inline auto FFileDialog::getDialogType() const noexcept -> DialogType
+{ return dlg_type; }
 
 }  // namespace finalcut
 
