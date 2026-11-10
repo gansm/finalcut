@@ -137,7 +137,7 @@ inline auto expandTilde (const FString& dir_name) -> FString
 
   return newdir.includes('~')
        ? newdir.replace('~', getHomeDir())
-       : newdir;
+       : std::move(newdir);
 }
 
 //----------------------------------------------------------------------
@@ -923,7 +923,7 @@ auto FFileDialog::getAbsolutePath (const FString& dir_name) const -> FString
 {
   // Path Resolution
   auto newdir = expandTilde(dir_name);
-  return newdir[0] == '/' ? newdir : directory + newdir;
+  return newdir[0] == '/' ?  std::move(newdir) : directory + newdir;
 }
 
 //----------------------------------------------------------------------

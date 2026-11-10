@@ -321,6 +321,9 @@ auto FListViewItem::insert (FListViewItem* child) -> FObject::iterator
 auto FListViewItem::insert ( FListViewItem* child
                            , iterator parent_iter ) const -> FObject::iterator
 {
+  if ( parent_iter == FObject::iterator{} )
+    return FObject::iterator{};
+
   auto listview_obj = getFListViewOwner();
 
   if ( listview_obj && parent_iter == listview_obj->getNullIterator() )

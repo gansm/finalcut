@@ -731,7 +731,7 @@ inline auto FListView::insert ( const FStringList& cols
 
   try
   {
-    item = new FListViewItem (cols, std::forward<DT>(d), getNullIterator());
+    item = new FListViewItem (cols, std::forward<DT>(d), FObject::iterator{});
   }
   catch (const std::bad_alloc&)
   {
