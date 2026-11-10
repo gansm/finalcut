@@ -65,6 +65,7 @@
 #include <libgen.h>
 #include <unistd.h>
 
+#include <ctime>
 #include <string>
 #include <vector>
 
@@ -72,9 +73,11 @@
 #include "final/dialog/fmessagebox.h"
 #include "final/output/tty/fterm.h"
 #include "final/widget/fbutton.h"
+#include "final/widget/fbuttongroup.h"
 #include "final/widget/fcheckbox.h"
 #include "final/widget/flineedit.h"
 #include "final/widget/flistbox.h"
+#include "final/widget/fradiobutton.h"
 #include "final/widget/fstatusbar.h"
 
 namespace finalcut
@@ -95,6 +98,16 @@ class FFileDialog : public FDialog
       Directory = 2
     };
 
+    // The order of the files in the list (directories always come first).
+    // Each order can be reversed with setSortReverse()
+    enum class SortOrder : uInt8
+    {
+      Name = 0,             // by name, case insensitive, A-Z (default)
+      Date = 1,             // by modification time, the newest file first
+      Size = 2,             // by size, the largest file first
+      DateNewestFirst = Date  // (old name)
+    };
+
     // Constructors
     explicit FFileDialog (FWidget* = nullptr);
 
@@ -113,11 +126,15 @@ class FFileDialog : public FDialog
     auto getSelectedFile() const -> FString;
     auto getShowHiddenFiles() const noexcept -> bool;
     auto getDialogType() const noexcept -> DialogType;
+    auto getSortOrder() const noexcept -> SortOrder;
+    auto getSortReverse() const noexcept -> bool;
 
     // Mutators
     void setPath (const FString&);
     void setFilter (const FString&);
     void setShowHiddenFiles (bool = true);
+    void setSortOrder (SortOrder);
+    void setSortReverse (bool = true);
     void setFilename (const FString&);
     void unsetShowHiddenFiles();
 
@@ -127,7 +144,9 @@ class FFileDialog : public FDialog
     // Methods
     static auto fileOpenChooser ( FWidget*
                                 , const FString& = FString()
-                                , const FString& = FString() ) -> FString;
+                                , const FString& = FString()
+                                , SortOrder = SortOrder::Name
+                                , bool = false ) -> FString;
     static auto fileSaveChooser ( FWidget*
                                 , const FString& = FString()
                                 , const FString& = FString() ) -> FString;
@@ -165,6 +184,8 @@ class FFileDialog : public FDialog
 
       // Data members
       std::string  name{};
+      std::time_t  mtime{0};  // modification time (only read when sorting by date)
+      off_t        size{0};   // file size (only read when sorting by size)
       // Type of file
       uChar fifo             : 1;
       uChar character_device : 1;
@@ -224,6 +245,7 @@ class FFileDialog : public FDialog
     void cb_processCancel();
     void cb_processOpen();
     void cb_processShowHidden();
+    void cb_processSort();
 
     // Data members
     DirEntries  dir_entries{};
@@ -232,13 +254,24 @@ class FFileDialog : public FDialog
     FLineEdit   file_name{this};
     FListBox    file_browser{this};
     FCheckBox   hidden_check{this};
+    FButtonGroup  sort_group{"sort by", this};
+    FRadioButton  sort_name{"n&ame", &sort_group};
+    FRadioButton  sort_date{"&date", &sort_group};
+    FRadioButton  sort_size{"si&ze", &sort_group};
+    FCheckBox     sort_reverse{"&rev", &sort_group};
     FButton     cancel_btn{this};
     FButton     open_btn{this};
     DialogType  dlg_type{DialogType::Open};
     bool        show_hidden{false};
+    SortOrder   sort_order{SortOrder::Name};
+    bool        sort_rev{false};
 
     // Friend functions
     friend auto sortFileByName ( const FFileDialog::FDirEntry&
+                               , const FFileDialog::FDirEntry& ) -> bool;
+    friend auto sortFileByDate ( const FFileDialog::FDirEntry&
+                               , const FFileDialog::FDirEntry& ) -> bool;
+    friend auto sortFileBySize ( const FFileDialog::FDirEntry&
                                , const FFileDialog::FDirEntry& ) -> bool;
     friend auto sortDirByName ( const FFileDialog::FDirEntry&
                               , const FFileDialog::FDirEntry& ) -> bool;
@@ -248,7 +281,9 @@ class FFileDialog : public FDialog
     friend auto Chooser ( FWidget*
                         , const FString&
                         , const FString&
-                        , FFileDialog::DialogType ) -> FString;
+                        , FFileDialog::DialogType
+                        , FFileDialog::SortOrder
+                        , bool ) -> FString;
 };
 
 // FMessageBox inline functions
@@ -275,6 +310,14 @@ inline auto FFileDialog::getShowHiddenFiles() const noexcept -> bool
 //----------------------------------------------------------------------
 inline auto FFileDialog::getDialogType() const noexcept -> DialogType
 { return dlg_type; }
+
+//----------------------------------------------------------------------
+inline auto FFileDialog::getSortOrder() const noexcept -> SortOrder
+{ return sort_order; }
+
+//----------------------------------------------------------------------
+inline auto FFileDialog::getSortReverse() const noexcept -> bool
+{ return sort_rev; }
 
 }  // namespace finalcut
 

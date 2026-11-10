@@ -50,6 +50,28 @@ auto sortFileByName ( const FFileDialog::FDirEntry& lhs
 }
 
 //----------------------------------------------------------------------
+auto sortFileByDate ( const FFileDialog::FDirEntry& lhs
+                    , const FFileDialog::FDirEntry& rhs ) -> bool
+{
+  // lhs < rhs: the newest file first, files with the same time by name
+  if ( lhs.mtime != rhs.mtime )
+    return lhs.mtime > rhs.mtime;
+
+  return FStringCaseCompare(lhs.name, rhs.name) < 0;
+}
+
+//----------------------------------------------------------------------
+auto sortFileBySize ( const FFileDialog::FDirEntry& lhs
+                    , const FFileDialog::FDirEntry& rhs ) -> bool
+{
+  // lhs < rhs: the largest file first, files with the same size by name
+  if ( lhs.size != rhs.size )
+    return lhs.size > rhs.size;
+
+  return FStringCaseCompare(lhs.name, rhs.name) < 0;
+}
+
+//----------------------------------------------------------------------
 auto sortDirByName ( const FFileDialog::FDirEntry& lhs
                    , const FFileDialog::FDirEntry& rhs ) -> bool
 {
@@ -235,7 +257,9 @@ void setAndSelectFilename ( FFileDialog& file_dialog
 auto Chooser ( FWidget* parent
              , const FString& dir_name
              , const FString& filter
-             , FFileDialog::DialogType type ) -> FString
+             , FFileDialog::DialogType type
+             , FFileDialog::SortOrder order
+             , bool reverse ) -> FString
 {
   auto full_path = expandTilde(dir_name).toString();
   FString path = getWorkingDirectory(full_path);
@@ -256,6 +280,8 @@ auto Chooser ( FWidget* parent
                           , std::move(file_filter)
                           , type
                           , parent );
+  file_dialog.setSortOrder(order);
+  file_dialog.setSortReverse(reverse);
   setAndSelectFilename (file_dialog, default_name);
 
   if ( file_dialog.exec() != FDialog::ResultCode::Accept )
@@ -393,6 +419,33 @@ void FFileDialog::setFilter (const FString& filter)
 }
 
 //----------------------------------------------------------------------
+void FFileDialog::setSortOrder (SortOrder order)
+{
+  if ( sort_order == order )
+    return;
+
+  sort_order = order;
+  // the radio buttons show the order (their "toggled" signal finds nothing to do)
+  sort_name.setChecked (order == SortOrder::Name);
+  sort_date.setChecked (order == SortOrder::Date);
+  sort_size.setChecked (order == SortOrder::Size);
+  readDir();  // read the directory again: the times and sizes are needed
+  file_browser.redraw();
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::setSortReverse (bool state)
+{
+  if ( sort_rev == state )
+    return;
+
+  sort_rev = state;
+  sort_reverse.setChecked (state);
+  readDir();
+  file_browser.redraw();
+}
+
+//----------------------------------------------------------------------
 void FFileDialog::setShowHiddenFiles (bool state)
 {
   if ( show_hidden == state )
@@ -426,9 +479,11 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 auto FFileDialog::fileOpenChooser ( FWidget* parent
                                   , const FString& dir_name
-                                  , const FString& filter ) -> FString
+                                  , const FString& filter
+                                  , SortOrder order
+                                  , bool reverse ) -> FString
 {
-  return Chooser (parent, dir_name, filter, DialogType::Open);
+  return Chooser (parent, dir_name, filter, DialogType::Open, order, reverse);
 }
 
 //----------------------------------------------------------------------
@@ -436,14 +491,16 @@ auto FFileDialog::fileSaveChooser ( FWidget* parent
                                   , const FString& dir_name
                                   , const FString& filter ) -> FString
 {
-  return Chooser (parent, dir_name, filter, DialogType::Save);
+  return Chooser (parent, dir_name, filter, DialogType::Save
+                , SortOrder::Name, false);
 }
 
 //----------------------------------------------------------------------
 auto FFileDialog::directoryChooser ( FWidget* parent
                                    , const FString& dir_name ) -> FString
 {
-  return Chooser (parent, dir_name, FString(), DialogType::Directory);
+  return Chooser (parent, dir_name, FString(), DialogType::Directory
+                , SortOrder::Name, false);
 }
 
 
@@ -456,14 +513,15 @@ void FFileDialog::adjustSize()
   auto max_width = root_widget ? root_widget->getClientWidth() : 80;
   auto max_height = root_widget ? root_widget->getClientHeight() : 24;
   std::size_t h = max_height - 6;
-  h = std::max(h, std::size_t(15));  // minimum 15
+  h = std::max(h, std::size_t(17));  // minimum 17
   h = std::min(h, std::size_t(30));  // maximum 30
   setHeight (h, false);
   const int X = 1 + int((max_width - getWidth()) / 2);
   const int Y = 1 + int((max_height - getHeight()) / 3);
   setPos(FPoint{X, Y}, false);
-  file_browser.setHeight (h - 8, false);
+  file_browser.setHeight (h - 10, false);
   hidden_check.setY (int(h) - 4, false);
+  sort_group.setY (int(h) - 7, false);
   cancel_btn.setY (int(h) - 4, false);
   open_btn.setY (int(h) - 4, false);
   FDialog::adjustSize();
@@ -476,7 +534,7 @@ void FFileDialog::adjustSize()
 void FFileDialog::init()
 {
   static constexpr std::size_t w = 42;
-  static constexpr std::size_t h = 15;
+  static constexpr std::size_t h = 17;
   FWindow::setGeometry(FPoint{1, 1}, FSize{w, h}, false);
   const auto& parent_widget = getParentWidget();
   int x = parent_widget ? 1 + int((parent_widget->getWidth() - w) / 2) : 1;
@@ -502,21 +560,30 @@ inline void FFileDialog::widgetSettings (const FPoint& pos)
   file_name.setGeometry (FPoint{11, 1}, FSize{28, 1});
   file_name.setFocus();
 
-  file_browser.setGeometry (FPoint{2, 3}, FSize{38, 6});
+  file_browser.setGeometry (FPoint{2, 3}, FSize{38, 7});
   printPath (directory);
 
   hidden_check.setText ("&hidden items");
-  hidden_check.setGeometry (FPoint{2, 10}, FSize{16, 1});
+  hidden_check.setGeometry (FPoint{2, 13}, FSize{16, 1});
+
+  sort_group.setGeometry (FPoint{2, 10}, FSize{38, 3});
+  sort_name.setGeometry (FPoint{1, 1}, FSize{8, 1});
+  sort_date.setGeometry (FPoint{10, 1}, FSize{8, 1});
+  sort_size.setGeometry (FPoint{19, 1}, FSize{8, 1});
+  sort_reverse.setGeometry (FPoint{28, 1}, FSize{8, 1});
+
+  if ( dlg_type == DialogType::Directory )
+    sort_group.unsetVisible();  // a directory list has no files to sort
 
   cancel_btn.setText ("&Cancel");
-  cancel_btn.setGeometry(FPoint{19, 10}, FSize{9, 1});
+  cancel_btn.setGeometry(FPoint{19, 13}, FSize{9, 1});
 
   if ( dlg_type == DialogType::Save )
     open_btn.setText ("&Save");
   else
     open_btn.setText ("&Open");
 
-  open_btn.setGeometry(FPoint{30, 10}, FSize{9, 1});
+  open_btn.setGeometry(FPoint{30, 13}, FSize{9, 1});
   FWindow::setGeometry (pos, getSize());
 }
 
@@ -545,6 +612,15 @@ void FFileDialog::initCallbacks()
   (
     "toggled",
     this, &FFileDialog::cb_processShowHidden
+  );
+
+  for (auto* button : { &sort_name, &sort_date, &sort_size })
+    button->addCallback ("toggled", this, &FFileDialog::cb_processSort);
+
+  sort_reverse.addCallback
+  (
+    "toggled",
+    this, &FFileDialog::cb_processSort
   );
 
   cancel_btn.addCallback
@@ -620,10 +696,36 @@ void FFileDialog::sortDir()
             , dir_entries.begin() + dir_num
             , sortDirByName );
 
-  // Sort files by name
-  std::sort ( dir_entries.begin() + dir_num
-            , dir_entries.end()
-            , sortFileByName );
+  // Sort files by name, date or size
+  const auto file_begin = dir_entries.begin() + dir_num;
+
+  switch ( sort_order )
+  {
+    case SortOrder::Date:
+      std::sort (file_begin, dir_entries.end(), sortFileByDate);
+      break;
+
+    case SortOrder::Size:
+      std::sort (file_begin, dir_entries.end(), sortFileBySize);
+      break;
+
+    default:
+      std::sort (file_begin, dir_entries.end(), sortFileByName);
+  }
+
+  if ( ! sort_rev )
+    return;
+
+  // Reverse the order of the files and (when sorted by name)
+  // of the directories - ".." always stays first
+  std::reverse (file_begin, dir_entries.end());
+
+  if ( sort_order == SortOrder::Name )
+  {
+    const bool has_parent = ! dir_entries.empty()
+                         && dir_entries.front().name == "..";
+    std::reverse (dir_entries.begin() + (has_parent ? 1 : 0), file_begin);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -677,6 +779,17 @@ void FFileDialog::getEntry (const std::string& dir, const struct dirent* d_entry
 #endif
 
   followSymLink (dir, entry);
+
+  if ( sort_order != SortOrder::Name && ! entry.directory )
+  {
+    struct stat sb{};
+
+    if ( ::stat((dir + entry.name).c_str(), &sb) == 0 )  // follows a symbolic link
+    {
+      entry.mtime = sb.st_mtime;
+      entry.size = sb.st_size;
+    }
+  }
 
   if ( entry.directory
     || (! is_dir_chooser && patternMatch(filter, entry.name)) )
@@ -1274,6 +1387,20 @@ void FFileDialog::cb_processOpen()
 void FFileDialog::cb_processShowHidden()
 {
   setShowHiddenFiles(! show_hidden);
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::cb_processSort()
+{
+  // No radio button is checked while switching: keep the current order
+  if ( sort_name.isChecked() )
+    setSortOrder (SortOrder::Name);
+  else if ( sort_date.isChecked() )
+    setSortOrder (SortOrder::Date);
+  else if ( sort_size.isChecked() )
+    setSortOrder (SortOrder::Size);
+
+  setSortReverse (sort_reverse.isChecked());
 }
 
 }  // namespace finalcut
