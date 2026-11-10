@@ -91,7 +91,8 @@ class FFileDialog : public FDialog
     enum class DialogType : uInt8
     {
       Open = 0,
-      Save = 1
+      Save = 1,
+      Directory = 2
     };
 
     // Constructors
@@ -130,6 +131,8 @@ class FFileDialog : public FDialog
     static auto fileSaveChooser ( FWidget*
                                 , const FString& = FString()
                                 , const FString& = FString() ) -> FString;
+    static auto directoryChooser ( FWidget*
+                                 , const FString& = FString() ) -> FString;
 
   protected:
     // Method
@@ -189,6 +192,7 @@ class FFileDialog : public FDialog
     void followSymLink (const std::string&, FDirEntry&) const;
     auto openDirectory() -> DIR*;
     auto closeDirectory (DIR*) -> CloseDir;
+    bool shouldSkipEntry (const struct dirent*, const std::string&) const;
     void readDirEntries (DIR*);
     auto getSelectedFilename() const -> std::string;
     auto interpretInputType() const -> InputType;
@@ -204,7 +208,6 @@ class FFileDialog : public FDialog
     auto changeDir (const FString&) -> int;
     void printPath (const FString&);
     void setTitelbarText();
-    static auto getHomeDir() -> FString;
     auto isFilterInput() const -> bool;
     auto isDirectoryInput() const -> bool;
     void activateNewFilter();
@@ -242,10 +245,10 @@ class FFileDialog : public FDialog
     friend auto sortDirFirst (const FFileDialog::FDirEntry&) -> bool;
     friend auto isRegularFile (const std::string&) noexcept -> bool;
     friend void setAndSelectFilename (FFileDialog&, const FString&);
-    friend auto fileChooser ( FWidget*
-                            , const FString&
-                            , const FString&
-                            , FFileDialog::DialogType ) -> FString;
+    friend auto Chooser ( FWidget*
+                        , const FString&
+                        , const FString&
+                        , FFileDialog::DialogType ) -> FString;
 };
 
 // FMessageBox inline functions
