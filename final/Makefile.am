@@ -21,6 +21,7 @@ DISTCLEANFILES = fconfig.h
 lib_LTLIBRARIES = libfinal.la
 
 libfinal_la_SOURCES = \
+	dialog/fdatedialog.cpp \
 	dialog/fdialog.cpp \
 	dialog/ffiledialog.cpp \
 	dialog/fmessagebox.cpp \
@@ -120,6 +121,7 @@ finalcutvtermincludedir = $(includedir)/final/vterm
 finalcutwidgetincludedir = $(includedir)/final/widget
 
 finalcutdialoginclude_HEADERS = \
+	dialog/fdatedialog.h \
 	dialog/fdialog.h \
 	dialog/ffiledialog.h \
 	dialog/fmessagebox.h

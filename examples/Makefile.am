@@ -25,6 +25,7 @@ noinst_PROGRAMS = \
 	cartesian_graph \
 	checklist \
 	choice \
+	date-dialog \
 	dialog \
 	event-log \
 	eventloop \
@@ -62,6 +63,7 @@ calculator_SOURCES = calculator.cpp
 cartesian_graph_SOURCES = cartesian_graph.cpp
 checklist_SOURCES = checklist.cpp
 choice_SOURCES = choice.cpp
+date_dialog_SOURCES = date-dialog.cpp
 dialog_SOURCES = dialog.cpp
 event_log_SOURCES = event-log.cpp
 eventloop_LDADD = -lpthread

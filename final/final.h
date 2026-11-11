@@ -36,6 +36,7 @@
 #include <final/fwidgetcolors.h>
 #include <final/fwidget_flags.h>
 #include <final/fwidget.h>
+#include <final/dialog/fdatedialog.h>
 #include <final/dialog/fdialog.h>
 #include <final/dialog/ffiledialog.h>
 #include <final/dialog/fmessagebox.h>
